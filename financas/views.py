@@ -304,6 +304,11 @@ class OrcamentoCreateView(UsuarioQuerysetMixin, CreateView):
     template_name = 'financas/orcamento_form.html'
     success_url = reverse_lazy('financas:orcamento_lista')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         messages.success(self.request, 'Orçamento criado com sucesso!')
@@ -315,6 +320,11 @@ class OrcamentoUpdateView(UsuarioQuerysetMixin, UpdateView):
     form_class = OrcamentoForm
     template_name = 'financas/orcamento_form.html'
     success_url = reverse_lazy('financas:orcamento_lista')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         messages.success(self.request, 'Orçamento atualizado com sucesso!')

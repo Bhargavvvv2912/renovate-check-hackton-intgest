@@ -139,6 +139,10 @@ class OrcamentoForm(forms.ModelForm):
             'valor': forms.NumberInput(attrs={'class': CLASSE_INPUT, 'placeholder': '0,00', 'step': '0.01', 'min': '0.01'}),
         }
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._user = user
+
     def clean_mes(self):
         mes = self.cleaned_data.get('mes')
         if mes is not None and not (1 <= mes <= 12):
@@ -150,3 +154,17 @@ class OrcamentoForm(forms.ModelForm):
         if valor is not None and valor <= 0:
             raise forms.ValidationError('O valor deve ser maior que zero.')
         return valor
+
+    def clean(self):
+        cleaned = super().clean()
+        mes = cleaned.get('mes')
+        ano = cleaned.get('ano')
+        if mes and ano and self._user:
+            qs = Orcamento.objects.filter(user=self._user, mes=mes, ano=ano)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError(
+                    f'Já existe um orçamento cadastrado para {mes:02d}/{ano}. Edite o orçamento existente.'
+                )
+        return cleaned
