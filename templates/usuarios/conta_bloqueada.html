@@ -3,16 +3,23 @@
 {% block titulo %}Conta Bloqueada{% endblock %}
 
 {% block conteudo %}
-<div class="flex items-center justify-center min-h-screen px-4">
-    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8 text-center">
-        <div class="text-red-500 text-5xl mb-4">&#9888;</div>
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Conta Bloqueada</h2>
-        <p class="text-gray-600 mb-6">
+<div class="flex items-center justify-center min-h-[80vh] px-4">
+    <div class="w-full max-w-md rounded-xl border p-8 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <div class="flex justify-center mb-4">
+            <i data-lucide="shield-alert" class="w-14 h-14" aria-hidden="true" style="color: var(--color-danger);"></i>
+        </div>
+        <h2 class="text-2xl font-display font-bold mb-3" style="color: var(--color-text-primary);">Conta Bloqueada</h2>
+        <p class="text-sm font-body mb-6" style="color: var(--color-text-secondary);">
             Sua conta está desativada. Entre em contato com o suporte para reativá-la.
         </p>
-        <form method="post" action="{% url 'usuarios:logout' %}" class="inline">
+        <form method="post" action="{% url 'usuarios:logout' %}">
             {% csrf_token %}
-            <button type="submit" class="inline-block py-2 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+            <button type="submit"
+                    class="min-h-[44px] py-2.5 px-6 rounded-xl font-display font-semibold transition inline-flex items-center gap-2"
+                    style="background-color: var(--color-danger); color: #fff;"
+                    onmouseover="this.style.opacity='0.9'"
+                    onmouseout="this.style.opacity='1'">
+                <i data-lucide="log-out" class="w-4 h-4" aria-hidden="true"></i>
                 Sair
             </button>
         </form>

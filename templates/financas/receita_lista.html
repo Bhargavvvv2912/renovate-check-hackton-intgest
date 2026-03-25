@@ -1,71 +1,139 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block titulo %}Receitas — Gestão Financeira{% endblock %}
 
 {% block conteudo %}
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Receitas</h1>
-    <a href="{% url 'financas:receita_criar' %}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
-        + Nova Receita
-    </a>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+    <h1 class="text-2xl font-display font-bold" style="color: var(--color-text-primary);">
+        <i data-lucide="trending-up" class="w-6 h-6 inline-block mr-2 align-middle" aria-hidden="true" style="color: var(--color-success);"></i>
+        Receitas
+    </h1>
+    <div class="flex items-center gap-2">
+        <button type="button" id="btn-filtros" onclick="toggleFiltros()"
+                class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border transition min-h-[44px]"
+                style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-secondary);"
+                onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4" aria-hidden="true"></i>
+            Filtros
+            {% if filtros_ativos %}<span class="inline-flex items-center justify-center w-2 h-2 rounded-full" style="background-color: var(--color-primary);"></span>{% endif %}
+        </button>
+        <a href="{% url 'financas:receita_criar' %}"
+           class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition min-h-[44px]"
+           style="background-color: var(--color-primary); color: #fff;"
+           onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+           onmouseout="this.style.backgroundColor='var(--color-primary)'">
+            <i data-lucide="plus" class="w-4 h-4" aria-hidden="true"></i>
+            Nova Receita
+        </a>
+    </div>
 </div>
 
-<!-- Filtros -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-    <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">Filtros</h2>
+<!-- Painel de Filtros -->
+<div id="painel-filtros" class="rounded-xl border p-6 mb-6" style="background-color: var(--color-surface-elevated); border-color: var(--color-border); {% if not filtros_ativos %}display:none;{% endif %}">
     <form method="get" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {% for field in filtro.form %}
         <div>
-            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ field.label }}</label>
             {{ field }}
         </div>
         {% endfor %}
         <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-4">
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition min-h-[44px]"
+                    style="background-color: var(--color-primary); color: #fff;"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+                    onmouseout="this.style.backgroundColor='var(--color-primary)'">
+                <i data-lucide="search" class="w-4 h-4" aria-hidden="true"></i>
                 Filtrar
             </button>
-            <a href="{% url 'financas:receita_lista' %}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-lg transition">
+            <a href="{% url 'financas:receita_lista' %}"
+               class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition min-h-[44px] border"
+               style="border-color: var(--color-border); color: var(--color-text-secondary); background-color: var(--color-surface-elevated);"
+               onmouseover="this.style.backgroundColor='var(--color-surface)'"
+               onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'">
+                <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
                 Limpar
             </a>
         </div>
     </form>
 </div>
+<script>
+function toggleFiltros() {
+    var p = document.getElementById('painel-filtros');
+    p.style.display = p.style.display === 'none' ? '' : 'none';
+}
+</script>
 
 <!-- Exportação -->
-<div class="flex flex-wrap gap-2 mb-4">
-    <span class="text-sm text-gray-500 self-center mr-1">Exportar:</span>
-    <a href="{% url 'financas:exportar' 'receita' 'json' %}?{{ request.GET.urlencode }}" class="px-3 py-1 text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-full font-medium transition">JSON</a>
-    <a href="{% url 'financas:exportar' 'receita' 'csv' %}?{{ request.GET.urlencode }}" class="px-3 py-1 text-xs bg-green-100 text-green-700 hover:bg-green-200 rounded-full font-medium transition">CSV</a>
-    <a href="{% url 'financas:exportar' 'receita' 'pdf' %}?{{ request.GET.urlencode }}" class="px-3 py-1 text-xs bg-red-100 text-red-700 hover:bg-red-200 rounded-full font-medium transition">PDF</a>
+<div class="flex flex-wrap items-center gap-2 mb-4">
+    <span class="text-sm mr-1 flex items-center gap-1" style="color: var(--color-text-secondary);">
+        <i data-lucide="download" class="w-4 h-4" aria-hidden="true"></i>
+        Exportar:
+    </span>
+    <a href="{% url 'financas:exportar' 'receita' 'json' %}?{{ request.GET.urlencode }}"
+       class="px-3 py-1.5 text-xs font-medium rounded-full border transition min-h-[32px] inline-flex items-center"
+       style="border-color: var(--color-info); color: var(--color-info);"
+       onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+       onmouseout="this.style.backgroundColor=''">JSON</a>
+    <a href="{% url 'financas:exportar' 'receita' 'csv' %}?{{ request.GET.urlencode }}"
+       class="px-3 py-1.5 text-xs font-medium rounded-full border transition min-h-[32px] inline-flex items-center"
+       style="border-color: var(--color-success); color: var(--color-success);"
+       onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+       onmouseout="this.style.backgroundColor=''">CSV</a>
+    <a href="{% url 'financas:exportar' 'receita' 'pdf' %}?{{ request.GET.urlencode }}"
+       class="px-3 py-1.5 text-xs font-medium rounded-full border transition min-h-[32px] inline-flex items-center"
+       style="border-color: var(--color-danger); color: var(--color-danger);"
+       onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+       onmouseout="this.style.backgroundColor=''">PDF</a>
 </div>
 
 <!-- Tabela -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="rounded-xl border overflow-hidden" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
     {% if receitas %}
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Data</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Descrição</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Categoria</th>
-                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Valor</th>
-                    <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-secondary);">Data</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-secondary);">Descrição</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-secondary);">Categoria</th>
+                    <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-secondary);">Valor</th>
+                    <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider" style="color: var(--color-text-secondary);">Ações</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody>
                 {% for receita in receitas %}
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4 text-gray-600 whitespace-nowrap">{{ receita.data|date:"d/m/Y" }}</td>
-                    <td class="px-6 py-4 text-gray-800">{{ receita.descricao }}</td>
+                <tr class="transition" style="border-bottom: 1px solid var(--color-border-subtle);"
+                    onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                    onmouseout="this.style.backgroundColor=''">
+                    <td class="px-6 py-4 whitespace-nowrap" style="color: var(--color-text-secondary);">{{ receita.data|date:"d/m/Y" }}</td>
+                    <td class="px-6 py-4" style="color: var(--color-text-primary);">{{ receita.descricao }}</td>
                     <td class="px-6 py-4">
-                        <span class="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
+                        <span class="inline-flex px-2.5 py-1 text-xs font-medium rounded-full"
+                              style="background-color: var(--color-primary-muted); color: var(--color-success);">
                             {{ receita.categoria.nome }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-green-600 font-semibold text-right whitespace-nowrap">R$ {{ receita.valor|floatformat:2 }}</td>
+                    <td class="px-6 py-4 text-right whitespace-nowrap font-semibold font-mono" style="color: var(--color-success);">R$ {{ receita.valor|floatformat:2 }}</td>
                     <td class="px-6 py-4 text-center whitespace-nowrap">
-                        <a href="{% url 'financas:receita_editar' receita.pk %}" class="text-blue-600 hover:text-blue-800 font-medium text-sm mr-3" aria-label="Editar receita {{ receita.descricao }}">Editar</a>
-                        <a href="{% url 'financas:receita_excluir' receita.pk %}" class="text-red-600 hover:text-red-800 font-medium text-sm" aria-label="Excluir receita {{ receita.descricao }}">Excluir</a>
+                        <a href="{% url 'financas:receita_editar' receita.pk %}"
+                           class="inline-flex items-center gap-1 px-2 py-1.5 text-sm font-medium rounded-lg transition min-h-[44px]"
+                           style="color: var(--color-primary);"
+                           onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                           onmouseout="this.style.backgroundColor=''"
+                           aria-label="Editar receita {{ receita.descricao }}">
+                            <i data-lucide="pencil" class="w-4 h-4" aria-hidden="true"></i>
+                            Editar
+                        </a>
+                        <a href="{% url 'financas:receita_excluir' receita.pk %}"
+                           class="inline-flex items-center gap-1 px-2 py-1.5 text-sm font-medium rounded-lg transition min-h-[44px]"
+                           style="color: var(--color-danger);"
+                           onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                           onmouseout="this.style.backgroundColor=''"
+                           aria-label="Excluir receita {{ receita.descricao }}">
+                            <i data-lucide="trash-2" class="w-4 h-4" aria-hidden="true"></i>
+                            Excluir
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -74,9 +142,15 @@
     </div>
     {% else %}
     <div class="text-center py-12">
-        <p class="text-gray-400 text-lg mb-4">Nenhuma receita encontrada.</p>
-        <a href="{% url 'financas:receita_criar' %}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
-            + Cadastrar primeira receita
+        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-4" aria-hidden="true" style="color: var(--color-text-disabled);"></i>
+        <p class="text-lg mb-4" style="color: var(--color-text-disabled);">Nenhuma receita encontrada.</p>
+        <a href="{% url 'financas:receita_criar' %}"
+           class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition min-h-[44px]"
+           style="background-color: var(--color-primary); color: #fff;"
+           onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+           onmouseout="this.style.backgroundColor='var(--color-primary)'">
+            <i data-lucide="plus" class="w-4 h-4" aria-hidden="true"></i>
+            Cadastrar primeira receita
         </a>
     </div>
     {% endif %}
@@ -88,24 +162,39 @@
     <ul class="inline-flex items-center gap-1">
         {% if page_obj.has_previous %}
         <li>
-            <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                ← Anterior
+            <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}"
+               class="inline-flex items-center gap-1 px-3 py-2 text-sm rounded-lg border transition min-h-[44px]"
+               style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-secondary);"
+               onmouseover="this.style.backgroundColor='var(--color-surface)'"
+               onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'">
+                <i data-lucide="chevron-left" class="w-4 h-4" aria-hidden="true"></i>
+                Anterior
             </a>
         </li>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
-            <li><span class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">{{ num }}</span></li>
+            <li><span class="px-3 py-2 text-sm rounded-lg font-medium min-h-[44px] inline-flex items-center"
+                       style="background-color: var(--color-primary); color: #fff;">{{ num }}</span></li>
             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-            <li><a href="?page={{ num }}&{{ request.GET.urlencode }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">{{ num }}</a></li>
+            <li><a href="?page={{ num }}&{{ request.GET.urlencode }}"
+                   class="px-3 py-2 text-sm rounded-lg border transition min-h-[44px] inline-flex items-center"
+                   style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-secondary);"
+                   onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                   onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'">{{ num }}</a></li>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
         <li>
-            <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                Próxima →
+            <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}"
+               class="inline-flex items-center gap-1 px-3 py-2 text-sm rounded-lg border transition min-h-[44px]"
+               style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-secondary);"
+               onmouseover="this.style.backgroundColor='var(--color-surface)'"
+               onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'">
+                Próxima
+                <i data-lucide="chevron-right" class="w-4 h-4" aria-hidden="true"></i>
             </a>
         </li>
         {% endif %}

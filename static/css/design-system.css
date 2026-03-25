@@ -1,0 +1,190 @@
+/* ==========================================================
+   Design System — Gestão Financeira SaaS
+   Paleta verde profissional com modo claro/escuro
+   NUNCA usar gradient, linear-gradient ou radial-gradient
+   ========================================================== */
+
+/* ---------- Fontes ---------- */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+/* ---------- Modo Claro (padrão) ---------- */
+[data-theme="light"] {
+    --color-background:       #FFFFFF;
+    --color-surface:          #F4F8F4;
+    --color-surface-elevated: #FFFFFF;
+    --color-border:           #D6E4D6;
+    --color-border-subtle:    #EAF2EA;
+
+    --color-primary:          #1A7A3C;
+    --color-primary-hover:    #155F30;
+    --color-primary-muted:    #E6F4EC;
+
+    --color-text-primary:     #0D1F0D;
+    --color-text-secondary:   #4A664A;
+    --color-text-disabled:    #A3BEA3;
+
+    --color-success:          #1A7A3C;
+    --color-danger:           #C0392B;
+    --color-warning:          #B07D00;
+    --color-info:             #1B5E8E;
+
+    --color-chart-1:          #1A7A3C;
+    --color-chart-2:          #2ECC71;
+    --color-chart-3:          #C0392B;
+    --color-chart-4:          #1B5E8E;
+}
+
+/* ---------- Modo Escuro ---------- */
+[data-theme="dark"] {
+    --color-background:       #0A0F0A;
+    --color-surface:          #111A11;
+    --color-surface-elevated: #182018;
+    --color-border:           #1F2E1F;
+    --color-border-subtle:    #162016;
+
+    --color-primary:          #27AE60;
+    --color-primary-hover:    #1E8449;
+    --color-primary-muted:    #112211;
+
+    --color-text-primary:     #E8F5E8;
+    --color-text-secondary:   #7FAF7F;
+    --color-text-disabled:    #3D5C3D;
+
+    --color-success:          #27AE60;
+    --color-danger:           #E74C3C;
+    --color-warning:          #F39C12;
+    --color-info:             #2980B9;
+
+    --color-chart-1:          #27AE60;
+    --color-chart-2:          #52D98A;
+    --color-chart-3:          #E74C3C;
+    --color-chart-4:          #2980B9;
+}
+
+/* ---------- Reset base ---------- */
+* {
+    scrollbar-color: var(--color-border) var(--color-surface);
+}
+
+body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+}
+
+/* ---------- Tipografia ---------- */
+.font-display { font-family: 'DM Sans', sans-serif; }
+.font-body    { font-family: 'IBM Plex Sans', sans-serif; }
+.font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+/* ---------- Foco acessível ---------- */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ---------- Redução de movimento ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    width: 220px;
+    transition: width 0.2s ease;
+    background-color: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+}
+.sidebar.collapsed {
+    width: 64px;
+}
+.sidebar.collapsed .sidebar-label {
+    display: none;
+}
+.sidebar.collapsed .sidebar-logo-text {
+    display: none;
+}
+
+/* Mobile sidebar drawer */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100vh;
+        z-index: 50;
+        transition: left 0.3s ease;
+    }
+    .sidebar.open {
+        left: 0;
+    }
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+    }
+    .sidebar.open ~ .sidebar-overlay {
+        display: block;
+    }
+}
+
+/* ---------- Scrollbar custom ---------- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+
+/* ---------- Form inputs com variáveis ---------- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="url"],
+input[type="tel"],
+select,
+textarea {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 15px;
+    width: 100%;
+    min-height: 42px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: border-color 0.15s ease;
+    box-sizing: border-box;
+}
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 36px;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary-muted);
+}
+
+/* ---------- Checkbox custom ---------- */
+input[type="checkbox"] {
+    accent-color: var(--color-primary);
+    width: 18px;
+    height: 18px;
+}
+
+/* ---------- Transições suaves do tema ---------- */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}

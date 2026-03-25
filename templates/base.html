@@ -1,115 +1,329 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% load static %}<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %}Gestão Financeira{% endblock %}</title>
+    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    display: ['"DM Sans"', 'sans-serif'],
+                    body: ['"IBM Plex Sans"', 'sans-serif'],
+                    mono: ['"IBM Plex Mono"', 'monospace'],
+                },
+                colors: {
+                    surface: 'var(--color-surface)',
+                    'surface-elevated': 'var(--color-surface-elevated)',
+                    border: 'var(--color-border)',
+                    'border-subtle': 'var(--color-border-subtle)',
+                    primary: 'var(--color-primary)',
+                    'primary-hover': 'var(--color-primary-hover)',
+                    'primary-muted': 'var(--color-primary-muted)',
+                    'text-primary': 'var(--color-text-primary)',
+                    'text-secondary': 'var(--color-text-secondary)',
+                    'text-disabled': 'var(--color-text-disabled)',
+                    success: 'var(--color-success)',
+                    danger: 'var(--color-danger)',
+                    warning: 'var(--color-warning)',
+                    info: 'var(--color-info)',
+                },
+            }
+        }
+    }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Design System CSS -->
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
     {% block extra_head %}{% endblock %}
+    <!-- Tema: aplicar antes do render para evitar flash -->
+    <script>
+    (function(){
+        var t = localStorage.getItem('theme-preference');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen font-body" style="background-color: var(--color-background); color: var(--color-text-primary);">
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="{% url 'financas:dashboard' %}" class="text-xl font-bold text-blue-600">
-                        💰 Gestão Financeira
-                    </a>
-                    {% if user.is_authenticated %}
-                    <div class="hidden md:flex ml-10 space-x-4">
-                        <a href="{% url 'financas:dashboard' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Dashboard</a>
-                        <a href="{% url 'financas:receita_lista' %}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition">Receitas</a>
-                        <a href="{% url 'financas:despesa_lista' %}" class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition">Despesas</a>
-                        <a href="{% url 'financas:categoria_lista' %}" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Categorias</a>
-                        <a href="{% url 'financas:orcamento_lista' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Orçamento</a>
-                        <a href="{% url 'financas:calendario' %}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition">📅 Calendário</a>
-                    </div>
-                    {% endif %}
+    <!-- Anunciador de tema para leitores de tela -->
+    <div id="theme-announcer" aria-live="polite" class="sr-only"></div>
+
+    {% if user.is_authenticated %}
+    <!-- ===== LAYOUT COM SIDEBAR (usuário autenticado) ===== -->
+    <div class="flex min-h-screen">
+
+        <!-- Overlay mobile -->
+        <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar flex flex-col h-screen sticky top-0 z-30" role="navigation" aria-label="Menu principal">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 px-4 h-16 border-b" style="border-color: var(--color-border);">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: var(--color-primary);">
+                    <i data-lucide="wallet" class="w-5 h-5 text-white" aria-hidden="true"></i>
                 </div>
-                <div class="flex items-center space-x-3">
-                    {% if user.is_authenticated %}
+                <span class="sidebar-label sidebar-logo-text font-display font-bold text-lg" style="color: var(--color-text-primary);">FinançasPro</span>
+            </div>
+
+            <!-- Navegação -->
+            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                <a href="{% url 'financas:dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]
+                    {% if request.resolver_match.url_name == 'dashboard' %}text-primary{% else %}{% endif %}"
+                    style="{% if request.resolver_match.url_name == 'dashboard' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="if(!this.classList.contains('text-primary'))this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="if(!this.classList.contains('text-primary'))this.style.backgroundColor=''"
+                    title="Dashboard" aria-label="Dashboard">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Dashboard</span>
+                </a>
+                <a href="{% url 'financas:receita_lista' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="{% if request.resolver_match.url_name == 'receita_lista' or request.resolver_match.url_name == 'receita_criar' or request.resolver_match.url_name == 'receita_editar' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="if(!this.style.color.includes('primary'))this.style.backgroundColor=''"
+                    title="Receitas" aria-label="Receitas">
+                    <i data-lucide="trending-up" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Receitas</span>
+                </a>
+                <a href="{% url 'financas:despesa_lista' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="{% if request.resolver_match.url_name == 'despesa_lista' or request.resolver_match.url_name == 'despesa_criar' or request.resolver_match.url_name == 'despesa_editar' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    title="Despesas" aria-label="Despesas">
+                    <i data-lucide="trending-down" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Despesas</span>
+                </a>
+                <a href="{% url 'financas:categoria_lista' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="{% if request.resolver_match.url_name == 'categoria_lista' or request.resolver_match.url_name == 'categoria_criar' or request.resolver_match.url_name == 'categoria_editar' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    title="Categorias" aria-label="Categorias">
+                    <i data-lucide="tag" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Categorias</span>
+                </a>
+                <a href="{% url 'financas:orcamento_lista' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="{% if request.resolver_match.url_name == 'orcamento_lista' or request.resolver_match.url_name == 'orcamento_criar' or request.resolver_match.url_name == 'orcamento_editar' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    title="Orçamento" aria-label="Orçamento">
+                    <i data-lucide="piggy-bank" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Orçamento</span>
+                </a>
+                <a href="{% url 'financas:calendario' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="{% if request.resolver_match.url_name == 'calendario' or request.resolver_match.url_name == 'calendario_mes' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    title="Calendário" aria-label="Calendário">
+                    <i data-lucide="calendar" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Calendário</span>
+                </a>
+                <a href="{% url 'financas:configuracao_alertas' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="{% if request.resolver_match.url_name == 'configuracao_alertas' %}background-color: var(--color-primary-muted); color: var(--color-primary);{% else %}color: var(--color-text-secondary);{% endif %}"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    title="Alertas" aria-label="Configuração de alertas">
+                    <i data-lucide="bell" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Alertas</span>
                     {% if alertas %}
-                    <a href="{% url 'financas:configuracao_alertas' %}" class="relative text-gray-600 hover:text-blue-600 transition" aria-label="Alertas" title="Alertas">
-                        <span class="text-lg">🔔</span>
-                        <span class="absolute -top-1 -right-2 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">{{ alertas|length }}</span>
+                    <span class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full" style="background-color: var(--color-danger);">{{ alertas|length }}</span>
+                    {% endif %}
+                </a>
+            </nav>
+
+            <!-- Rodapé da sidebar -->
+            <div class="px-3 py-4 border-t space-y-1" style="border-color: var(--color-border);">
+                <a href="{% url 'usuarios:perfil' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+                    style="color: var(--color-text-secondary);"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    title="Perfil" aria-label="Meu perfil">
+                    <i data-lucide="user" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">{{ user.username }}</span>
+                </a>
+                <form method="post" action="{% url 'usuarios:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] w-full"
+                        style="color: var(--color-danger);"
+                        onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                        onmouseout="this.style.backgroundColor=''"
+                        aria-label="Sair da conta">
+                        <i data-lucide="log-out" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                        <span class="sidebar-label">Sair</span>
+                    </button>
+                </form>
+                <!-- Toggle collapse desktop -->
+                <button id="sidebar-toggle-desktop" class="hidden md:flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] w-full"
+                    style="color: var(--color-text-secondary);"
+                    onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                    onmouseout="this.style.backgroundColor=''"
+                    aria-label="Recolher menu">
+                    <i data-lucide="panel-left-close" class="w-5 h-5 flex-shrink-0" aria-hidden="true"></i>
+                    <span class="sidebar-label">Recolher</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Header -->
+            <header class="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-6 border-b" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+                <!-- Botão menu mobile -->
+                <button id="sidebar-toggle-mobile" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg" style="color: var(--color-text-secondary);" aria-label="Abrir menu">
+                    <i data-lucide="menu" class="w-6 h-6" aria-hidden="true"></i>
+                </button>
+
+                <div class="flex-1"></div>
+
+                <div class="flex items-center gap-3">
+                    <!-- Toggle tema -->
+                    <button onclick="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors" style="color: var(--color-text-secondary);"
+                        onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                        onmouseout="this.style.backgroundColor=''"
+                        aria-label="Alternar tema">
+                        <i id="icon-sun" data-lucide="sun" class="w-5 h-5 hidden" aria-hidden="true"></i>
+                        <i id="icon-moon" data-lucide="moon" class="w-5 h-5" aria-hidden="true"></i>
+                    </button>
+
+                    <!-- Alertas no header -->
+                    {% if alertas %}
+                    <a href="{% url 'financas:configuracao_alertas' %}" class="relative flex items-center justify-center w-10 h-10 rounded-lg transition-colors"
+                        style="color: var(--color-text-secondary);"
+                        onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                        onmouseout="this.style.backgroundColor=''"
+                        aria-label="Ver alertas" title="Alertas">
+                        <i data-lucide="bell" class="w-5 h-5" aria-hidden="true"></i>
+                        <span class="absolute top-1 right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white rounded-full" style="background-color: var(--color-danger);">{{ alertas|length }}</span>
                     </a>
                     {% endif %}
-                    <a href="{% url 'usuarios:perfil' %}" class="text-gray-600 hover:text-blue-600 text-sm font-medium transition" aria-label="Perfil do usuário">
-                        {{ user.username }}
+
+                    <!-- Perfil no header -->
+                    <a href="{% url 'usuarios:perfil' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                        style="color: var(--color-text-secondary);"
+                        onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                        onmouseout="this.style.backgroundColor=''"
+                        aria-label="Perfil do usuário">
+                        <i data-lucide="user-circle" class="w-5 h-5" aria-hidden="true"></i>
+                        <span class="hidden sm:inline">{{ user.username }}</span>
                     </a>
-                    <form method="post" action="{% url 'usuarios:logout' %}" class="inline">
-                        {% csrf_token %}
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition" aria-label="Sair da conta">
-                            Sair
-                        </button>
-                    </form>
-                    {% else %}
-                    <a href="{% url 'usuarios:login' %}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition">Entrar</a>
-                    <a href="{% url 'usuarios:registro' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Registrar</a>
-                    {% endif %}
                 </div>
-                <!-- Menu mobile -->
-                {% if user.is_authenticated %}
-                <div class="flex items-center md:hidden">
-                    <button onclick="document.getElementById('menu-mobile').classList.toggle('hidden')" class="text-gray-600 hover:text-blue-600 p-2" aria-label="Abrir menu">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
+            </header>
+
+            <!-- Mensagens -->
+            {% if messages %}
+            <div class="px-4 md:px-6 pt-4">
+                {% for message in messages %}
+                <div class="mb-2 px-4 py-3 rounded-xl text-sm font-medium flex items-center justify-between border"
+                    style="{% if message.tags == 'success' %}background-color: var(--color-primary-muted); color: var(--color-success); border-color: var(--color-success);
+                    {% elif message.tags == 'error' %}background-color: #FEF2F2; color: var(--color-danger); border-color: var(--color-danger);
+                    {% elif message.tags == 'warning' %}background-color: #FFFBEB; color: var(--color-warning); border-color: var(--color-warning);
+                    {% else %}background-color: #EFF6FF; color: var(--color-info); border-color: var(--color-info);{% endif %}"
+                    role="alert">
+                    <div class="flex items-center gap-2">
+                        {% if message.tags == 'success' %}<i data-lucide="check-circle-2" class="w-4 h-4" aria-hidden="true"></i>
+                        {% elif message.tags == 'error' %}<i data-lucide="x-circle" class="w-4 h-4" aria-hidden="true"></i>
+                        {% elif message.tags == 'warning' %}<i data-lucide="alert-triangle" class="w-4 h-4" aria-hidden="true"></i>
+                        {% else %}<i data-lucide="info" class="w-4 h-4" aria-hidden="true"></i>{% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="ml-4 opacity-70 hover:opacity-100 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Fechar mensagem">
+                        <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
                     </button>
                 </div>
-                {% endif %}
+                {% endfor %}
             </div>
-        </div>
-        <!-- Links mobile -->
-        {% if user.is_authenticated %}
-        <div id="menu-mobile" class="hidden md:hidden border-t border-gray-200 bg-white">
-            <div class="px-4 py-3 space-y-2">
-                <a href="{% url 'financas:dashboard' %}" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                <a href="{% url 'financas:receita_lista' %}" class="block text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Receitas</a>
-                <a href="{% url 'financas:despesa_lista' %}" class="block text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">Despesas</a>
-                <a href="{% url 'financas:categoria_lista' %}" class="block text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">Categorias</a>
-                <a href="{% url 'financas:orcamento_lista' %}" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Orçamento</a>
-                <a href="{% url 'financas:calendario' %}" class="block text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">📅 Calendário</a>
+            {% endif %}
+
+            <!-- Conteúdo -->
+            <main class="flex-1 px-4 md:px-6 py-6">
+    {% else %}
+    <!-- ===== LAYOUT SEM SIDEBAR (visitante) ===== -->
+
+    <!-- Header simples -->
+    <header class="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-8 border-b" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <a href="{% url 'landing' %}" class="flex items-center gap-2 font-display font-bold text-lg" style="color: var(--color-primary);">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: var(--color-primary);">
+                <i data-lucide="wallet" class="w-5 h-5 text-white" aria-hidden="true"></i>
             </div>
+            FinançasPro
+        </a>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors" style="color: var(--color-text-secondary);"
+                onmouseover="this.style.backgroundColor='var(--color-primary-muted)'"
+                onmouseout="this.style.backgroundColor=''"
+                aria-label="Alternar tema">
+                <i id="icon-sun" data-lucide="sun" class="w-5 h-5 hidden" aria-hidden="true"></i>
+                <i id="icon-moon" data-lucide="moon" class="w-5 h-5" aria-hidden="true"></i>
+            </button>
+            <a href="{% url 'usuarios:login' %}" class="px-4 py-2 rounded-lg text-sm font-medium border transition-colors min-h-[44px] flex items-center"
+                style="color: var(--color-text-primary); border-color: var(--color-border);"
+                onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                onmouseout="this.style.backgroundColor=''"
+                >Entrar</a>
+            <a href="{% url 'usuarios:registro' %}" class="px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors min-h-[44px] flex items-center"
+                style="background-color: var(--color-primary);"
+                onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+                onmouseout="this.style.backgroundColor='var(--color-primary)'"
+                >Criar Conta</a>
         </div>
-        {% endif %}
-    </nav>
+    </header>
 
     <!-- Mensagens -->
     {% if messages %}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <div class="max-w-5xl mx-auto px-4 md:px-8 pt-4">
         {% for message in messages %}
-        <div class="mb-2 px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between
-            {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-200
-            {% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-200
-            {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-200
-            {% else %}bg-blue-100 text-blue-800 border border-blue-200{% endif %}"
+        <div class="mb-2 px-4 py-3 rounded-xl text-sm font-medium flex items-center justify-between border"
+            style="{% if message.tags == 'success' %}background-color: var(--color-primary-muted); color: var(--color-success); border-color: var(--color-success);
+            {% elif message.tags == 'error' %}background-color: #FEF2F2; color: var(--color-danger); border-color: var(--color-danger);
+            {% else %}background-color: #EFF6FF; color: var(--color-info); border-color: var(--color-info);{% endif %}"
             role="alert">
             <span>{{ message }}</span>
-            <button onclick="this.parentElement.remove()" class="ml-4 text-lg leading-none opacity-70 hover:opacity-100" aria-label="Fechar mensagem">&times;</button>
+            <button onclick="this.parentElement.remove()" class="ml-4 opacity-70 hover:opacity-100 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Fechar mensagem">
+                <i data-lucide="x" class="w-4 h-4" aria-hidden="true"></i>
+            </button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Conteúdo principal -->
+    <!-- Conteúdo -->
     <main class="flex-1">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {% block conteudo %}{% endblock %}
-        </div>
-    </main>
+    {% endif %}
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <p class="text-center text-sm text-gray-500">
-                &copy; 2026 Gestão Financeira &mdash; Todos os direitos reservados.
-            </p>
+    {% block conteudo %}{% endblock %}
+
+    {% if user.is_authenticated %}
+            </main>
+
+            <!-- Footer autenticado -->
+            <footer class="px-4 md:px-6 py-4 border-t" style="border-color: var(--color-border);">
+                <p class="text-center text-xs font-body" style="color: var(--color-text-disabled);">
+                    &copy; 2026 FinançasPro &mdash; Todos os direitos reservados.
+                </p>
+            </footer>
         </div>
+    </div>
+    {% else %}
+            </main>
+
+    <!-- Footer visitante -->
+    <footer class="py-4 border-t" style="border-color: var(--color-border);">
+        <p class="text-center text-xs font-body" style="color: var(--color-text-disabled);">
+            &copy; 2026 FinançasPro &mdash; Todos os direitos reservados.
+        </p>
     </footer>
+    {% endif %}
 
+    <!-- Scripts -->
+    <script src="{% static 'js/theme-toggle.js' %}"></script>
+    {% if user.is_authenticated %}
+    <script src="{% static 'js/sidebar.js' %}"></script>
+    {% endif %}
+    <script>lucide.createIcons();</script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

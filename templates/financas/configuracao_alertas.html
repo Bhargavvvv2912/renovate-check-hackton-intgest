@@ -1,100 +1,141 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block titulo %}Configuração de Alertas — Gestão Financeira{% endblock %}
 
 {% block conteudo %}
 <div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Configuração de Alertas</h1>
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{% url 'financas:dashboard' %}"
+           class="inline-flex items-center justify-center w-10 h-10 rounded-lg border transition min-h-[44px] min-w-[44px]"
+           style="border-color: var(--color-border); color: var(--color-text-secondary);"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'"
+           onmouseout="this.style.backgroundColor=''"
+           aria-label="Voltar ao Dashboard">
+            <i data-lucide="arrow-left" class="w-5 h-5" aria-hidden="true"></i>
+        </a>
+        <h1 class="text-2xl font-display font-bold" style="color: var(--color-text-primary);">
+            <i data-lucide="settings" class="w-6 h-6 inline-block mr-2 align-middle" aria-hidden="true" style="color: var(--color-primary);"></i>
+            Configuração de Alertas
+        </h1>
+    </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="rounded-xl border p-6" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
         <form method="post" novalidate>
             {% csrf_token %}
 
             {% if form.non_field_errors %}
-            <div class="mb-4 px-4 py-3 bg-red-100 text-red-800 border border-red-200 rounded-lg text-sm" role="alert">
+            <div class="mb-4 px-4 py-3 rounded-lg text-sm border" role="alert"
+                 style="background-color: var(--color-primary-muted); border-color: var(--color-danger); color: var(--color-danger);">
                 {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
+                <p class="flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0" aria-hidden="true"></i>
+                    {{ error }}
+                </p>
                 {% endfor %}
             </div>
             {% endif %}
 
             <!-- Seção: Alerta de Orçamento -->
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-700 mb-1">🔔 Alerta de Orçamento</h2>
-                <p class="text-sm text-gray-500 mb-4">Receba alertas quando seus gastos se aproximarem do orçamento definido.</p>
+            <div class="mb-6 p-4 rounded-xl border" style="background-color: var(--color-surface); border-color: var(--color-border);">
+                <div class="flex items-center gap-2 mb-1">
+                    <i data-lucide="bell" class="w-5 h-5" aria-hidden="true" style="color: var(--color-primary);"></i>
+                    <h2 class="text-lg font-display font-semibold" style="color: var(--color-text-primary);">Alerta de Orçamento</h2>
+                </div>
+                <p class="text-sm mb-4" style="color: var(--color-text-secondary);">Receba alertas quando seus gastos se aproximarem do orçamento definido.</p>
 
                 <div class="flex items-center gap-3 mb-4">
                     {{ form.alerta_orcamento_ativo }}
-                    <label for="{{ form.alerta_orcamento_ativo.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                    <label for="{{ form.alerta_orcamento_ativo.id_for_label }}" class="text-sm font-medium cursor-pointer" style="color: var(--color-text-primary);">
                         Ativar alerta de orçamento
                     </label>
                 </div>
 
                 <div id="secao-orcamento" class="ml-8">
                     <div class="mb-4">
-                        <label for="{{ form.limiar_orcamento.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="{{ form.limiar_orcamento.id_for_label }}" class="block text-sm font-medium mb-1" style="color: var(--color-text-secondary);">
                             Limiar de alerta (%)
                         </label>
                         {{ form.limiar_orcamento }}
                         {% if form.limiar_orcamento.errors %}
                         <div class="mt-1">
                             {% for error in form.limiar_orcamento.errors %}
-                            <p class="text-sm text-red-600">{{ error }}</p>
+                            <p class="text-sm flex items-center gap-1" style="color: var(--color-danger);">
+                                <i data-lucide="alert-circle" class="w-3 h-3" aria-hidden="true"></i>
+                                {{ error }}
+                            </p>
                             {% endfor %}
                         </div>
                         {% endif %}
-                        <p class="mt-1 text-xs text-gray-500">Alerta será disparado quando os gastos atingirem esse percentual do orçamento (1–100).</p>
+                        <p class="mt-1 text-xs" style="color: var(--color-text-disabled);">Alerta será disparado quando os gastos atingirem esse percentual do orçamento (1–100).</p>
                     </div>
                 </div>
             </div>
 
             <!-- Seção: Alerta de Gasto Acelerado -->
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-700 mb-1">⚡ Alerta de Gasto Acelerado</h2>
-                <p class="text-sm text-gray-500 mb-4">Receba alertas quando a velocidade de gastos estiver acima do esperado para o período.</p>
+            <div class="mb-6 p-4 rounded-xl border" style="background-color: var(--color-surface); border-color: var(--color-border);">
+                <div class="flex items-center gap-2 mb-1">
+                    <i data-lucide="zap" class="w-5 h-5" aria-hidden="true" style="color: var(--color-warning);"></i>
+                    <h2 class="text-lg font-display font-semibold" style="color: var(--color-text-primary);">Alerta de Gasto Acelerado</h2>
+                </div>
+                <p class="text-sm mb-4" style="color: var(--color-text-secondary);">Receba alertas quando a velocidade de gastos estiver acima do esperado para o período.</p>
 
                 <div class="flex items-center gap-3">
                     {{ form.alerta_gasto_acelerado_ativo }}
-                    <label for="{{ form.alerta_gasto_acelerado_ativo.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                    <label for="{{ form.alerta_gasto_acelerado_ativo.id_for_label }}" class="text-sm font-medium cursor-pointer" style="color: var(--color-text-primary);">
                         Ativar alerta de gasto acelerado
                     </label>
                 </div>
             </div>
 
             <!-- Seção: Alerta de Saldo Baixo -->
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-700 mb-1">⚠️ Alerta de Saldo Baixo</h2>
-                <p class="text-sm text-gray-500 mb-4">Receba alertas quando seu saldo estiver abaixo do limite mínimo definido.</p>
+            <div class="mb-6 p-4 rounded-xl border" style="background-color: var(--color-surface); border-color: var(--color-border);">
+                <div class="flex items-center gap-2 mb-1">
+                    <i data-lucide="alert-triangle" class="w-5 h-5" aria-hidden="true" style="color: var(--color-danger);"></i>
+                    <h2 class="text-lg font-display font-semibold" style="color: var(--color-text-primary);">Alerta de Saldo Baixo</h2>
+                </div>
+                <p class="text-sm mb-4" style="color: var(--color-text-secondary);">Receba alertas quando seu saldo estiver abaixo do limite mínimo definido.</p>
 
                 <div class="flex items-center gap-3 mb-4">
                     {{ form.alerta_saldo_baixo_ativo }}
-                    <label for="{{ form.alerta_saldo_baixo_ativo.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                    <label for="{{ form.alerta_saldo_baixo_ativo.id_for_label }}" class="text-sm font-medium cursor-pointer" style="color: var(--color-text-primary);">
                         Ativar alerta de saldo baixo
                     </label>
                 </div>
 
                 <div id="secao-saldo" class="ml-8">
                     <div class="mb-4">
-                        <label for="{{ form.limite_saldo_minimo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="{{ form.limite_saldo_minimo.id_for_label }}" class="block text-sm font-medium mb-1" style="color: var(--color-text-secondary);">
                             Limite mínimo de saldo (R$)
                         </label>
                         {{ form.limite_saldo_minimo }}
                         {% if form.limite_saldo_minimo.errors %}
                         <div class="mt-1">
                             {% for error in form.limite_saldo_minimo.errors %}
-                            <p class="text-sm text-red-600">{{ error }}</p>
+                            <p class="text-sm flex items-center gap-1" style="color: var(--color-danger);">
+                                <i data-lucide="alert-circle" class="w-3 h-3" aria-hidden="true"></i>
+                                {{ error }}
+                            </p>
                             {% endfor %}
                         </div>
                         {% endif %}
-                        <p class="mt-1 text-xs text-gray-500">Alerta será disparado quando o saldo ficar abaixo deste valor.</p>
+                        <p class="mt-1 text-xs" style="color: var(--color-text-disabled);">Alerta será disparado quando o saldo ficar abaixo deste valor.</p>
                     </div>
                 </div>
             </div>
 
             <div class="flex items-center gap-3 mt-6">
-                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-lg transition min-h-[44px]"
+                        style="background-color: var(--color-primary); color: #fff;"
+                        onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+                        onmouseout="this.style.backgroundColor='var(--color-primary)'">
+                    <i data-lucide="check" class="w-4 h-4" aria-hidden="true"></i>
                     Salvar configurações
                 </button>
-                <a href="{% url 'financas:dashboard' %}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                <a href="{% url 'financas:dashboard' %}"
+                   class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-lg transition min-h-[44px] border"
+                   style="border-color: var(--color-border); color: var(--color-text-secondary);"
+                   onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                   onmouseout="this.style.backgroundColor=''">
                     Voltar ao Dashboard
                 </a>
             </div>

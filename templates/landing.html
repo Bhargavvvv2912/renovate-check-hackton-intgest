@@ -1,22 +1,198 @@
 {% extends "base.html" %}
 
-{% block titulo %}Gestão Financeira — Controle suas finanças{% endblock %}
+{% block titulo %}FinançasPro — Sistema de Gestão Financeira Pessoal{% endblock %}
 
 {% block conteudo %}
-<div class="flex flex-col items-center justify-center min-h-screen px-4">
-    <h1 class="text-4xl font-bold text-gray-800 mb-4">Gestão Financeira</h1>
-    <p class="text-lg text-gray-600 mb-8 text-center max-w-xl">
-        Controle suas receitas e despesas de forma simples e eficiente.
+<!-- ===== HERO ===== -->
+<section class="px-4 md:px-8 py-16 md:py-24 text-center max-w-5xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 border"
+         style="background-color: var(--color-primary-muted); color: var(--color-primary); border-color: var(--color-primary);">
+        <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
+        Sistema Gratuito · 100% Privado · Sem Anúncios
+    </div>
+
+    <h1 class="font-display font-bold text-4xl md:text-6xl mb-6 leading-tight" style="color: var(--color-text-primary);">
+        Tome o controle das suas<br>
+        <span style="color: var(--color-primary);">finanças pessoais</span>
+    </h1>
+
+    <p class="font-body text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style="color: var(--color-text-secondary);">
+        O <strong>FinançasPro</strong> é um sistema completo de gestão financeira pessoal.
+        Registre receitas e despesas, defina orçamentos, receba alertas inteligentes
+        e visualize sua saúde financeira em tempo real.
     </p>
-    <div class="flex gap-4">
-        <a href="{% url 'usuarios:login' %}"
-           class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Entrar
-        </a>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
         <a href="{% url 'usuarios:registro' %}"
-           class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            Criar Conta
+           class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-semibold text-base transition-all shadow-lg min-h-[52px]"
+           style="background-color: var(--color-primary);"
+           onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+           onmouseout="this.style.backgroundColor='var(--color-primary)'">
+            <i data-lucide="user-plus" class="w-5 h-5" aria-hidden="true"></i>
+            Começar Agora — É Grátis
+        </a>
+        <a href="{% url 'usuarios:login' %}"
+           class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base border-2 transition-all min-h-[52px]"
+           style="color: var(--color-text-primary); border-color: var(--color-border);"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'"
+           onmouseout="this.style.backgroundColor=''">
+            <i data-lucide="log-in" class="w-5 h-5" aria-hidden="true"></i>
+            Já tenho conta
         </a>
     </div>
-</div>
+
+<!-- Continuação: Stats e Features inline -->
+
+<!-- STATS -->
+</section>
+<section class="px-4 md:px-8 py-10 border-y" style="border-color: var(--color-border); background-color: var(--color-surface-elevated);">
+    <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+            <p class="font-display font-bold text-3xl" style="color: var(--color-primary);">100%</p>
+            <p class="text-sm mt-1" style="color: var(--color-text-secondary);">Seus dados privados</p>
+        </div>
+        <div>
+            <p class="font-display font-bold text-3xl" style="color: var(--color-primary);">0</p>
+            <p class="text-sm mt-1" style="color: var(--color-text-secondary);">Anúncios e rastreadores</p>
+        </div>
+        <div>
+            <p class="font-display font-bold text-3xl" style="color: var(--color-primary);">∞</p>
+            <p class="text-sm mt-1" style="color: var(--color-text-secondary);">Lançamentos sem limite</p>
+        </div>
+        <div>
+            <p class="font-display font-bold text-3xl" style="color: var(--color-primary);">24/7</p>
+            <p class="text-sm mt-1" style="color: var(--color-text-secondary);">Disponível a qualquer hora</p>
+        </div>
+    </div>
+</section>
+
+<!-- FUNCIONALIDADES -->
+<section class="px-4 md:px-8 py-16 max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+        <h2 class="font-display font-bold text-3xl md:text-4xl mb-4" style="color: var(--color-text-primary);">
+            Tudo que você precisa em um lugar
+        </h2>
+        <p class="font-body text-lg" style="color: var(--color-text-secondary);">
+            Ferramentas poderosas para uma gestão financeira completa e sem complicação.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="layout-dashboard" class="w-6 h-6" style="color: var(--color-primary);" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Dashboard Completo</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+                Visualize saldo, receitas e despesas em gráficos e resumos claros. Tome decisões com dados reais do mês.
+            </p>
+        </div>
+        <div class="p-6 rounded-2xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="arrow-left-right" class="w-6 h-6" style="color: var(--color-primary);" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Receitas e Despesas</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+                Registre lançamentos com categorias, datas e natureza (fixo, variável ou eventual). Filtros avançados para análise.
+            </p>
+        </div>
+        <div class="p-6 rounded-2xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="piggy-bank" class="w-6 h-6" style="color: var(--color-primary);" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Orçamento Mensal</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+                Defina metas de gastos por mês e acompanhe sua evolução em tempo real. Saiba antes de ultrapassar o limite.
+            </p>
+        </div>
+        <div class="p-6 rounded-2xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="tag" class="w-6 h-6" style="color: var(--color-primary);" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Categorias Personalizadas</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+                Crie categorias de receitas e despesas do jeito que faz sentido para você. Total flexibilidade.
+            </p>
+        </div>
+        <div class="p-6 rounded-2xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="bell-ring" class="w-6 h-6" style="color: var(--color-primary);" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Alertas Inteligentes</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+                Receba avisos quando próximo do limite do orçamento, com gastos acelerados ou saldo abaixo do mínimo definido.
+            </p>
+        </div>
+        <div class="p-6 rounded-2xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="calendar" class="w-6 h-6" style="color: var(--color-primary);" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Calendário Financeiro</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+                Veja seus lançamentos em formato de calendário. Clique em qualquer dia para ver o detalhe das transações.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="px-4 md:px-8 py-16 border-t" style="border-color: var(--color-border); background-color: var(--color-surface-elevated);">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="font-display font-bold text-3xl md:text-4xl mb-4" style="color: var(--color-text-primary);">
+                Simples de usar, poderoso nos resultados
+            </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl text-white"
+                     style="background-color: var(--color-primary);">1</div>
+                <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Crie sua conta</h3>
+                <p class="text-sm" style="color: var(--color-text-secondary);">
+                    Cadastro rápido e gratuito. Nenhum cartão de crédito necessário. Seus dados ficam só com você.
+                </p>
+            </div>
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl text-white"
+                     style="background-color: var(--color-primary);">2</div>
+                <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Registre seus lançamentos</h3>
+                <p class="text-sm" style="color: var(--color-text-secondary);">
+                    Adicione receitas e despesas com categoria, data e valor. Leva segundos por lançamento.
+                </p>
+            </div>
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl text-white"
+                     style="background-color: var(--color-primary);">3</div>
+                <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--color-text-primary);">Monitore e evolua</h3>
+                <p class="text-sm" style="color: var(--color-text-secondary);">
+                    Acompanhe o progresso no dashboard, configure alertas e tome decisões financeiras com confiança.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="px-4 md:px-8 py-16 max-w-4xl mx-auto">
+    <div class="rounded-2xl border p-8 md:p-12 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6" style="background-color: var(--color-primary-muted);">
+            <i data-lucide="shield-check" class="w-8 h-8" style="color: var(--color-primary);" aria-hidden="true"></i>
+        </div>
+        <h2 class="font-display font-bold text-2xl md:text-3xl mb-4" style="color: var(--color-text-primary);">
+            Sua privacidade é prioridade
+        </h2>
+        <p class="font-body text-base mb-8 max-w-xl mx-auto" style="color: var(--color-text-secondary);">
+            Cada conta tem isolamento total — nenhum usuário vê os dados de outro.
+            Sem compartilhamento, sem rastreamento, sem anúncios. Seus dados financeiros são exclusivamente seus.
+        </p>
+        <a href="{% url 'usuarios:registro' %}"
+           class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-semibold text-base transition-all min-h-[52px]"
+           style="background-color: var(--color-primary);"
+           onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+           onmouseout="this.style.backgroundColor='var(--color-primary)'">
+            <i data-lucide="user-plus" class="w-5 h-5" aria-hidden="true"></i>
+            Criar minha conta gratuita
+        </a>
+    </div>
+</section>
 {% endblock %}

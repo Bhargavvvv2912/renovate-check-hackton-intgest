@@ -1,226 +1,273 @@
 {% extends "base.html" %}
-{% block titulo %}Dashboard — Gestão Financeira{% endblock %}
+{% block titulo %}Dashboard — FinançasPro{% endblock %}
 
 {% block conteudo %}
-<h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard</h1>
+<div class="space-y-5">
 
-<!-- Cards de resumo -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Saldo -->
-    <div class="bg-white rounded-xl shadow-sm border p-6 {% if saldo.saldo >= 0 %}border-blue-200{% else %}border-red-200{% endif %}">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Saldo</p>
-                <p class="text-2xl font-bold mt-1 {% if saldo.saldo >= 0 %}text-blue-600{% else %}text-red-600{% endif %}">
-                    R$ {{ saldo.saldo|floatformat:2 }}
-                </p>
+    <!-- Cabeçalho -->
+    <div class="flex items-center justify-between">
+        <h1 class="font-display font-bold text-2xl" style="color: var(--color-text-primary);">Dashboard</h1>
+        <div class="flex gap-2">
+            <a href="{% url 'financas:receita_criar' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors min-h-[44px]"
+                style="background-color: var(--color-success);"
+                onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <i data-lucide="plus" class="w-4 h-4" aria-hidden="true"></i> Receita
+            </a>
+            <a href="{% url 'financas:despesa_criar' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white transition-colors min-h-[44px]"
+                style="background-color: var(--color-danger);"
+                onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <i data-lucide="plus" class="w-4 h-4" aria-hidden="true"></i> Despesa
+            </a>
+        </div>
+    </div>
+
+    <!-- Cards de Métricas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-5 rounded-xl" style="background-color: {% if saldo.saldo < 0 %}var(--color-danger){% else %}var(--color-primary){% endif %};">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-white/70 uppercase tracking-wider">Saldo Total</p>
+                    <p class="font-mono font-bold text-2xl text-white mt-1">R$ {{ saldo.saldo|floatformat:2 }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-white/20">
+                    <i data-lucide="{% if saldo.saldo < 0 %}alert-triangle{% else %}wallet{% endif %}" class="w-5 h-5 text-white" aria-hidden="true"></i>
+                </div>
             </div>
-            <div class="text-3xl {% if saldo.saldo >= 0 %}text-blue-400{% else %}text-red-400{% endif %}">
-                💰
+        </div>
+        <div class="p-5 rounded-xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-secondary);">Total Receitas</p>
+                    <p class="font-mono font-bold text-2xl mt-1" style="color: var(--color-success);">R$ {{ saldo.total_receitas|floatformat:2 }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(34,197,94,0.1);">
+                    <i data-lucide="trending-up" class="w-5 h-5" style="color: var(--color-success);" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        <div class="p-5 rounded-xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-secondary);">Total Despesas</p>
+                    <p class="font-mono font-bold text-2xl mt-1" style="color: var(--color-danger);">R$ {{ saldo.total_despesas|floatformat:2 }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(239,68,68,0.1);">
+                    <i data-lucide="trending-down" class="w-5 h-5" style="color: var(--color-danger);" aria-hidden="true"></i>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Receitas -->
-    <div class="bg-white rounded-xl shadow-sm border border-green-200 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Total Receitas</p>
-                <p class="text-2xl font-bold text-green-600 mt-1">
-                    R$ {{ saldo.total_receitas|floatformat:2 }}
-                </p>
+    <!-- Alertas -->
+    {% include 'components/alertas.html' %}
+
+    <!-- Gráficos — linha única com 3 colunas -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        <!-- Barras: Receitas vs Despesas -->
+        <div class="p-5 rounded-xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <h2 class="font-display font-semibold text-sm mb-3" style="color: var(--color-text-primary);">Receitas vs Despesas</h2>
+            <div style="height: 200px; position: relative;">
+                <canvas id="grafico-barras" aria-label="Gráfico de barras comparando receitas e despesas"></canvas>
             </div>
-            <div class="text-3xl text-green-400">📈</div>
         </div>
-    </div>
 
-    <!-- Total Despesas -->
-    <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Total Despesas</p>
-                <p class="text-2xl font-bold text-red-600 mt-1">
-                    R$ {{ saldo.total_despesas|floatformat:2 }}
-                </p>
+        <!-- Pizza: Receitas por Categoria -->
+        <div class="p-5 rounded-xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <h2 class="font-display font-semibold text-sm mb-3" style="color: var(--color-text-primary);">Receitas por Categoria</h2>
+            {% if resumo_receitas %}
+            <div style="height: 200px; position: relative;">
+                <canvas id="grafico-pizza-receitas" aria-label="Gráfico de pizza das receitas por categoria"></canvas>
             </div>
-            <div class="text-3xl text-red-400">📉</div>
+            {% else %}
+            <p class="text-center py-16 text-sm" style="color: var(--color-text-disabled);">Nenhuma receita.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pizza: Despesas por Categoria -->
+        <div class="p-5 rounded-xl border" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <h2 class="font-display font-semibold text-sm mb-3" style="color: var(--color-text-primary);">Despesas por Categoria</h2>
+            {% if resumo_despesas %}
+            <div style="height: 200px; position: relative;">
+                <canvas id="grafico-pizza-despesas" aria-label="Gráfico de pizza das despesas por categoria"></canvas>
+            </div>
+            {% else %}
+            <p class="text-center py-16 text-sm" style="color: var(--color-text-disabled);">Nenhuma despesa.</p>
+            {% endif %}
         </div>
     </div>
-</div>
 
-<!-- Alertas Inteligentes -->
-{% include 'components/alertas.html' %}
+    <!-- Previsão -->
+    {% include 'components/previsao_saldo.html' %}
 
-<!-- Previsão de Saldo -->
-{% include 'components/previsao_saldo.html' %}
+    <!-- Últimos Lançamentos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-<!-- Gráficos -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- Receitas vs Despesas (Barras) -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Receitas vs Despesas</h2>
-        <canvas id="grafico-barras" aria-label="Gráfico de barras comparando receitas e despesas"></canvas>
-    </div>
-
-    <!-- Receitas por Categoria (Pizza) -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Receitas por Categoria</h2>
-        {% if resumo_receitas %}
-        <canvas id="grafico-pizza-receitas" aria-label="Gráfico de pizza das receitas por categoria"></canvas>
-        {% else %}
-        <p class="text-gray-400 text-center py-8">Nenhuma receita cadastrada.</p>
-        {% endif %}
-    </div>
-
-    <!-- Despesas por Categoria (Pizza) -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:col-span-2">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Despesas por Categoria</h2>
-        {% if resumo_despesas %}
-        <div class="max-w-md mx-auto">
-            <canvas id="grafico-pizza-despesas" aria-label="Gráfico de pizza das despesas por categoria"></canvas>
-        </div>
-        {% else %}
-        <p class="text-gray-400 text-center py-8">Nenhuma despesa cadastrada.</p>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Últimos lançamentos -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- Últimas Receitas -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-700">Últimas Receitas</h2>
-            <a href="{% url 'financas:receita_lista' %}" class="text-sm text-green-600 hover:text-green-700 font-medium">Ver todas →</a>
-        </div>
-        {% if ultimas_receitas %}
-        <div class="overflow-x-auto">
+        <!-- Últimas Receitas -->
+        <div class="rounded-xl border overflow-hidden" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center justify-between px-5 py-3 border-b" style="border-color: var(--color-border);">
+                <h2 class="font-display font-semibold text-sm" style="color: var(--color-text-primary);">Últimas Receitas</h2>
+                <a href="{% url 'financas:receita_lista' %}" class="text-xs font-medium flex items-center gap-1" style="color: var(--color-primary);">
+                    Ver todas <i data-lucide="arrow-right" class="w-3 h-3" aria-hidden="true"></i>
+                </a>
+            </div>
+            {% if ultimas_receitas %}
             <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-gray-500 border-b">
-                        <th class="pb-2 font-medium">Data</th>
-                        <th class="pb-2 font-medium">Descrição</th>
-                        <th class="pb-2 font-medium text-right">Valor</th>
-                    </tr>
-                </thead>
                 <tbody>
                     {% for receita in ultimas_receitas %}
-                    <tr class="border-b border-gray-50 hover:bg-gray-50">
-                        <td class="py-2 text-gray-600">{{ receita.data|date:"d/m/Y" }}</td>
-                        <td class="py-2 text-gray-800">{{ receita.descricao }}</td>
-                        <td class="py-2 text-green-600 font-medium text-right">R$ {{ receita.valor|floatformat:2 }}</td>
+                    <tr class="border-b transition-colors" style="border-color: var(--color-border-subtle);"
+                        onmouseover="this.style.backgroundColor='var(--color-surface)'" onmouseout="this.style.backgroundColor=''">
+                        <td class="px-5 py-2.5 font-mono text-xs w-24" style="color: var(--color-text-secondary);">{{ receita.data|date:"d/m/Y" }}</td>
+                        <td class="px-2 py-2.5 truncate max-w-0" style="color: var(--color-text-primary);">{{ receita.descricao }}</td>
+                        <td class="px-5 py-2.5 text-right font-mono font-semibold whitespace-nowrap" style="color: var(--color-success);">R$ {{ receita.valor|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p class="text-center py-8 text-sm" style="color: var(--color-text-disabled);">Nenhuma receita.</p>
+            {% endif %}
         </div>
-        {% else %}
-        <p class="text-gray-400 text-center py-4">Nenhuma receita cadastrada.</p>
-        {% endif %}
-    </div>
 
-    <!-- Últimas Despesas -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-700">Últimas Despesas</h2>
-            <a href="{% url 'financas:despesa_lista' %}" class="text-sm text-red-600 hover:text-red-700 font-medium">Ver todas →</a>
-        </div>
-        {% if ultimas_despesas %}
-        <div class="overflow-x-auto">
+        <!-- Últimas Despesas -->
+        <div class="rounded-xl border overflow-hidden" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center justify-between px-5 py-3 border-b" style="border-color: var(--color-border);">
+                <h2 class="font-display font-semibold text-sm" style="color: var(--color-text-primary);">Últimas Despesas</h2>
+                <a href="{% url 'financas:despesa_lista' %}" class="text-xs font-medium flex items-center gap-1" style="color: var(--color-primary);">
+                    Ver todas <i data-lucide="arrow-right" class="w-3 h-3" aria-hidden="true"></i>
+                </a>
+            </div>
+            {% if ultimas_despesas %}
             <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-gray-500 border-b">
-                        <th class="pb-2 font-medium">Data</th>
-                        <th class="pb-2 font-medium">Descrição</th>
-                        <th class="pb-2 font-medium text-right">Valor</th>
-                    </tr>
-                </thead>
                 <tbody>
                     {% for despesa in ultimas_despesas %}
-                    <tr class="border-b border-gray-50 hover:bg-gray-50">
-                        <td class="py-2 text-gray-600">{{ despesa.data|date:"d/m/Y" }}</td>
-                        <td class="py-2 text-gray-800">{{ despesa.descricao }}</td>
-                        <td class="py-2 text-red-600 font-medium text-right">R$ {{ despesa.valor|floatformat:2 }}</td>
+                    <tr class="border-b transition-colors" style="border-color: var(--color-border-subtle);"
+                        onmouseover="this.style.backgroundColor='var(--color-surface)'" onmouseout="this.style.backgroundColor=''">
+                        <td class="px-5 py-2.5 font-mono text-xs w-24" style="color: var(--color-text-secondary);">{{ despesa.data|date:"d/m/Y" }}</td>
+                        <td class="px-2 py-2.5 truncate max-w-0" style="color: var(--color-text-primary);">{{ despesa.descricao }}</td>
+                        <td class="px-5 py-2.5 text-right font-mono font-semibold whitespace-nowrap" style="color: var(--color-danger);">R$ {{ despesa.valor|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p class="text-center py-8 text-sm" style="color: var(--color-text-disabled);">Nenhuma despesa.</p>
+            {% endif %}
         </div>
-        {% else %}
-        <p class="text-gray-400 text-center py-4">Nenhuma despesa cadastrada.</p>
-        {% endif %}
     </div>
-</div>
 
-<!-- Links rápidos -->
-<div class="flex flex-wrap gap-3">
-    <a href="{% url 'financas:receita_criar' %}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
-        + Nova Receita
-    </a>
-    <a href="{% url 'financas:despesa_criar' %}" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition">
-        + Nova Despesa
-    </a>
-    <a href="{% url 'financas:categoria_lista' %}" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">
-        Categorias
-    </a>
+    <!-- Links rápidos -->
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'financas:categoria_lista' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors min-h-[44px]"
+            style="color: var(--color-text-primary); border-color: var(--color-border);"
+            onmouseover="this.style.backgroundColor='var(--color-surface)'" onmouseout="this.style.backgroundColor=''">
+            <i data-lucide="tag" class="w-4 h-4" aria-hidden="true"></i> Categorias
+        </a>
+        <a href="{% url 'financas:orcamento_lista' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors min-h-[44px]"
+            style="color: var(--color-text-primary); border-color: var(--color-border);"
+            onmouseover="this.style.backgroundColor='var(--color-surface)'" onmouseout="this.style.backgroundColor=''">
+            <i data-lucide="piggy-bank" class="w-4 h-4" aria-hidden="true"></i> Orçamentos
+        </a>
+        <a href="{% url 'financas:calendario' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors min-h-[44px]"
+            style="color: var(--color-text-primary); border-color: var(--color-border);"
+            onmouseover="this.style.backgroundColor='var(--color-surface)'" onmouseout="this.style.backgroundColor=''">
+            <i data-lucide="calendar" class="w-4 h-4" aria-hidden="true"></i> Calendário
+        </a>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+{{ dados_grafico_barras|json_script:"dados-barras" }}
+{{ dados_pizza_receitas|json_script:"dados-pizza-receitas" }}
+{{ dados_pizza_despesas|json_script:"dados-pizza-despesas" }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const coresPizza = [
-        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-        '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
-    ];
+(function () {
+    var cs = getComputedStyle(document.documentElement);
+    var corSucesso   = cs.getPropertyValue('--color-success').trim() || '#22c55e';
+    var corPerigo    = cs.getPropertyValue('--color-danger').trim()  || '#ef4444';
+    var corBorda     = cs.getPropertyValue('--color-border-subtle').trim();
+    var corTexto     = cs.getPropertyValue('--color-text-secondary').trim();
+    var corSurface   = cs.getPropertyValue('--color-surface-elevated').trim();
+    var cores = ['#6366f1','#f59e0b','#06b6d4','#8b5cf6','#ec4899','#84cc16','#f97316','#14b8a6','#a855f7','#64748b'];
 
-    // Gráfico de barras — Receitas vs Despesas
+    var dadosBarras        = JSON.parse(document.getElementById('dados-barras').textContent);
+    var dadosPizzaReceitas = JSON.parse(document.getElementById('dados-pizza-receitas').textContent);
+    var dadosPizzaDespesas = JSON.parse(document.getElementById('dados-pizza-despesas').textContent);
+
+    var tooltipDefaults = {
+        backgroundColor: corSurface,
+        titleColor: corTexto,
+        bodyColor: corTexto,
+        borderColor: corBorda,
+        borderWidth: 1,
+    };
+
+    // Barras
     new Chart(document.getElementById('grafico-barras'), {
         type: 'bar',
         data: {
             labels: ['Receitas', 'Despesas'],
             datasets: [{
-                label: 'Valor (R$)',
-                data: [{{ saldo.total_receitas|floatformat:2 }}, {{ saldo.total_despesas|floatformat:2 }}],
-                backgroundColor: ['#10b981', '#ef4444'],
+                data: [dadosBarras.receitas, dadosBarras.despesas],
+                backgroundColor: [corSucesso, corPerigo],
                 borderRadius: 8,
             }]
         },
         options: {
             responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: tooltipDefaults,
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: corBorda }, ticks: { color: corTexto } },
+                x: { grid: { display: false }, ticks: { color: corTexto } },
+            }
         }
     });
 
-    // Gráfico pizza — Receitas por categoria
-    {% if resumo_receitas %}
-    new Chart(document.getElementById('grafico-pizza-receitas'), {
-        type: 'doughnut',
-        data: {
-            labels: [{% for item in resumo_receitas %}'{{ item.categoria__nome }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
-            datasets: [{
-                data: [{% for item in resumo_receitas %}{{ item.total|floatformat:2 }}{% if not forloop.last %}, {% endif %}{% endfor %}],
-                backgroundColor: coresPizza,
-            }]
-        },
-        options: { responsive: true }
-    });
-    {% endif %}
+    // Pizza Receitas
+    var elPizzaR = document.getElementById('grafico-pizza-receitas');
+    if (elPizzaR && dadosPizzaReceitas.labels.length) {
+        new Chart(elPizzaR, {
+            type: 'doughnut',
+            data: {
+                labels: dadosPizzaReceitas.labels,
+                datasets: [{ data: dadosPizzaReceitas.valores, backgroundColor: cores, borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: corTexto, boxWidth: 12, font: { size: 11 } } },
+                    tooltip: tooltipDefaults,
+                }
+            }
+        });
+    }
 
-    // Gráfico pizza — Despesas por categoria
-    {% if resumo_despesas %}
-    new Chart(document.getElementById('grafico-pizza-despesas'), {
-        type: 'doughnut',
-        data: {
-            labels: [{% for item in resumo_despesas %}'{{ item.categoria__nome }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
-            datasets: [{
-                data: [{% for item in resumo_despesas %}{{ item.total|floatformat:2 }}{% if not forloop.last %}, {% endif %}{% endfor %}],
-                backgroundColor: coresPizza,
-            }]
-        },
-        options: { responsive: true }
-    });
-    {% endif %}
+    // Pizza Despesas
+    var elPizzaD = document.getElementById('grafico-pizza-despesas');
+    if (elPizzaD && dadosPizzaDespesas.labels.length) {
+        new Chart(elPizzaD, {
+            type: 'doughnut',
+            data: {
+                labels: dadosPizzaDespesas.labels,
+                datasets: [{ data: dadosPizzaDespesas.valores, backgroundColor: cores, borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: corTexto, boxWidth: 12, font: { size: 11 } } },
+                    tooltip: tooltipDefaults,
+                }
+            }
+        });
+    }
+})();
 </script>
 {% endblock %}

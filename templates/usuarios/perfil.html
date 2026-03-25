@@ -3,37 +3,49 @@
 {% block titulo %}Meu Perfil{% endblock %}
 
 {% block conteudo %}
-<div class="flex items-center justify-center min-h-screen px-4">
-    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Meu Perfil</h2>
+<div class="flex items-center justify-center min-h-[80vh] px-4">
+    <div class="w-full max-w-md rounded-xl border p-8" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <div class="flex flex-col items-center mb-6">
+            <i data-lucide="user-circle" class="w-10 h-10 mb-3" aria-hidden="true" style="color: var(--color-primary);"></i>
+            <h2 class="text-2xl font-display font-bold" style="color: var(--color-text-primary);">Meu Perfil</h2>
+        </div>
 
         <div class="space-y-4">
-            <div>
-                <span class="text-sm font-medium text-gray-500">Usuário</span>
-                <p class="text-gray-800">{{ user.username }}</p>
+            <div class="rounded-lg p-3" style="background-color: var(--color-surface); border: 1px solid var(--color-border-subtle);">
+                <span class="text-xs font-medium font-body" style="color: var(--color-text-disabled);">Usuário</span>
+                <p class="text-sm font-medium font-body" style="color: var(--color-text-primary);">{{ user.username }}</p>
             </div>
-            <div>
-                <span class="text-sm font-medium text-gray-500">Nome</span>
-                <p class="text-gray-800">{{ user.first_name|default:"—" }}</p>
+            <div class="rounded-lg p-3" style="background-color: var(--color-surface); border: 1px solid var(--color-border-subtle);">
+                <span class="text-xs font-medium font-body" style="color: var(--color-text-disabled);">Nome</span>
+                <p class="text-sm font-medium font-body" style="color: var(--color-text-primary);">{{ user.first_name|default:"\u2014" }}</p>
             </div>
-            <div>
-                <span class="text-sm font-medium text-gray-500">E-mail</span>
-                <p class="text-gray-800">{{ user.email|default:"—" }}</p>
+            <div class="rounded-lg p-3" style="background-color: var(--color-surface); border: 1px solid var(--color-border-subtle);">
+                <span class="text-xs font-medium font-body" style="color: var(--color-text-disabled);">E-mail</span>
+                <p class="text-sm font-medium font-body" style="color: var(--color-text-primary);">{{ user.email|default:"\u2014" }}</p>
             </div>
-            <div>
-                <span class="text-sm font-medium text-gray-500">Membro desde</span>
-                <p class="text-gray-800">{{ user.date_joined|date:"d/m/Y" }}</p>
+            <div class="rounded-lg p-3" style="background-color: var(--color-surface); border: 1px solid var(--color-border-subtle);">
+                <span class="text-xs font-medium font-body" style="color: var(--color-text-disabled);">Membro desde</span>
+                <p class="text-sm font-medium font-body" style="color: var(--color-text-primary);">{{ user.date_joined|date:"d/m/Y" }}</p>
             </div>
         </div>
 
-        <div class="mt-6 flex gap-4">
+        <div class="mt-6 flex gap-3">
             <a href="{% url 'landing' %}"
-               class="flex-1 text-center py-2 px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+               class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl font-display font-semibold transition flex items-center justify-center gap-2"
+               style="background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-secondary);"
+               onmouseover="this.style.backgroundColor='var(--color-surface-elevated)'"
+               onmouseout="this.style.backgroundColor='var(--color-surface)'">
+                <i data-lucide="arrow-left" class="w-4 h-4" aria-hidden="true"></i>
                 Voltar
             </a>
             <form method="post" action="{% url 'usuarios:logout' %}" class="flex-1">
                 {% csrf_token %}
-                <button type="submit" class="w-full text-center py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                <button type="submit"
+                        class="w-full min-h-[44px] py-2.5 px-4 rounded-xl font-display font-semibold transition flex items-center justify-center gap-2"
+                        style="background-color: var(--color-danger); color: #fff;"
+                        onmouseover="this.style.opacity='0.9'"
+                        onmouseout="this.style.opacity='1'">
+                    <i data-lucide="log-out" class="w-4 h-4" aria-hidden="true"></i>
                     Sair
                 </button>
             </form>

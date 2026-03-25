@@ -9,7 +9,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 import calendar
 from datetime import date
 
-from financas.filters import DespesaFilter, ReceitaFilter
+from financas.filters import CategoriaFilter, DespesaFilter, OrcamentoFilter, ReceitaFilter
 from financas.forms import CategoriaForm, ConfiguracaoAlertaForm, DespesaForm, OrcamentoForm, ReceitaForm
 from financas.models import Categoria, ConfiguracaoAlerta, Despesa, Orcamento, Receita
 from financas.services import (
@@ -40,6 +40,20 @@ def dashboard_view(request):
     resumo_receitas = resumo_por_categoria(usuario, 'receita')
     resumo_despesas = resumo_por_categoria(usuario, 'despesa')
 
+    # Dados para gráficos — passados como dicts Python para o json_script serializar corretamente
+    dados_grafico_barras = {
+        'receitas': float(saldo['total_receitas']),
+        'despesas': float(saldo['total_despesas']),
+    }
+    dados_pizza_receitas = {
+        'labels': [item['categoria__nome'] for item in resumo_receitas],
+        'valores': [float(item['total']) for item in resumo_receitas],
+    }
+    dados_pizza_despesas = {
+        'labels': [item['categoria__nome'] for item in resumo_despesas],
+        'valores': [float(item['total']) for item in resumo_despesas],
+    }
+
     # Últimos lançamentos (5 de cada)
     ultimas_receitas = Receita.objects.filter(user=usuario).select_related('categoria')[:5]
     ultimas_despesas = Despesa.objects.filter(user=usuario).select_related('categoria')[:5]
@@ -54,6 +68,9 @@ def dashboard_view(request):
         'ultimas_receitas': ultimas_receitas,
         'ultimas_despesas': ultimas_despesas,
         'previsao': previsao,
+        'dados_grafico_barras': dados_grafico_barras,
+        'dados_pizza_receitas': dados_pizza_receitas,
+        'dados_pizza_despesas': dados_pizza_despesas,
     }
     return render(request, 'financas/dashboard.html', contexto)
 
@@ -83,6 +100,7 @@ class ReceitaListView(UsuarioQuerysetMixin, ListView):
     def get_context_data(self, **kwargs):
         contexto = super().get_context_data(**kwargs)
         contexto['filtro'] = self.filtro
+        contexto['filtros_ativos'] = any(v for v in self.request.GET.values() if v)
         return contexto
 
 
@@ -145,6 +163,7 @@ class DespesaListView(UsuarioQuerysetMixin, ListView):
     def get_context_data(self, **kwargs):
         contexto = super().get_context_data(**kwargs)
         contexto['filtro'] = self.filtro
+        contexto['filtros_ativos'] = any(v for v in self.request.GET.values() if v)
         return contexto
 
 
@@ -198,6 +217,17 @@ class CategoriaListView(UsuarioQuerysetMixin, ListView):
     template_name = 'financas/categoria_lista.html'
     context_object_name = 'categorias'
     paginate_by = 20
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        self.filtro = CategoriaFilter(self.request.GET, queryset=qs)
+        return self.filtro.qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['filtro'] = self.filtro
+        ctx['filtros_ativos'] = any(v for v in self.request.GET.values() if v)
+        return ctx
 
 
 class CategoriaCreateView(UsuarioQuerysetMixin, CreateView):
@@ -255,6 +285,17 @@ class OrcamentoListView(UsuarioQuerysetMixin, ListView):
     template_name = 'financas/orcamento_lista.html'
     context_object_name = 'orcamentos'
     paginate_by = 12
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        self.filtro = OrcamentoFilter(self.request.GET, queryset=qs)
+        return self.filtro.qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['filtro'] = self.filtro
+        ctx['filtros_ativos'] = any(v for v in self.request.GET.values() if v)
+        return ctx
 
 
 class OrcamentoCreateView(UsuarioQuerysetMixin, CreateView):
@@ -353,6 +394,9 @@ def calendario_view(request, mes=None, ano=None):
     else:
         proximo_mes, proximo_ano = mes + 1, ano
 
+    meses_opcoes = list(NOMES_MESES.items())  # [(1, 'janeiro'), ...]
+    anos_opcoes = list(range(2020, date.today().year + 3))
+
     contexto = {
         'mes': mes,
         'ano': ano,
@@ -362,6 +406,8 @@ def calendario_view(request, mes=None, ano=None):
         'ano_anterior': ano_anterior,
         'proximo_mes': proximo_mes,
         'proximo_ano': proximo_ano,
+        'meses_opcoes': meses_opcoes,
+        'anos_opcoes': anos_opcoes,
     }
 
     if aba == 'heatzone':

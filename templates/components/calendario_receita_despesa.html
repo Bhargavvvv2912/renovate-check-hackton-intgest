@@ -1,15 +1,15 @@
 <!-- Legenda -->
-<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-    <p class="text-sm font-medium text-gray-700 mb-2">Balança do dia:</p>
-    <div class="flex items-center space-x-4 text-xs text-gray-600">
-        <span class="flex items-center"><span class="w-4 h-4 rounded-full bg-green-500 mr-1"></span> Receita</span>
-        <span class="flex items-center"><span class="w-4 h-4 rounded-full bg-red-500 mr-1"></span> Despesa</span>
+<div class="rounded-xl border p-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+    <p class="text-sm font-medium mb-2" style="color: var(--color-text-primary);">Balança do dia:</p>
+    <div class="flex items-center space-x-4 text-xs" style="color: var(--color-text-secondary);">
+        <span class="flex items-center"><span class="w-4 h-4 rounded-full mr-1" style="background-color: var(--color-success);"></span> Receita</span>
+        <span class="flex items-center"><span class="w-4 h-4 rounded-full mr-1" style="background-color: var(--color-danger);"></span> Despesa</span>
     </div>
 </div>
 
 <!-- Calendário Grid -->
-<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-    <div class="grid grid-cols-7 text-center text-sm font-medium text-gray-600 bg-gray-50 border-b border-gray-200">
+<div class="rounded-xl border overflow-hidden" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+    <div class="grid grid-cols-7 text-center text-sm font-medium" style="color: var(--color-text-secondary); background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
         <div class="py-3">Seg</div>
         <div class="py-3">Ter</div>
         <div class="py-3">Qua</div>
@@ -19,23 +19,35 @@
         <div class="py-3">Dom</div>
     </div>
     {% for semana in semanas_balanca %}
-    <div class="grid grid-cols-7 border-b border-gray-100 last:border-b-0">
+    <div class="grid grid-cols-7" style="border-bottom: 1px solid var(--color-border-subtle);">
         {% for dia_info in semana %}
         {% if dia_info %}
         <a href="{% url 'financas:calendario_dia' ano mes dia_info.dia %}"
-           class="p-2 min-h-[100px] hover:bg-gray-50 transition border-r border-gray-100 last:border-r-0 {% if not dia_info.tem_dados %}bg-gray-50{% else %}bg-white{% endif %}">
-            <div class="text-sm font-medium text-gray-800">{{ dia_info.dia }}</div>
+           class="p-2 min-h-[100px] min-w-[44px] transition"
+           style="border-right: 1px solid var(--color-border-subtle); {% if not dia_info.tem_dados %}background-color: var(--color-surface);{% else %}background-color: var(--color-surface-elevated);{% endif %}"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'" onmouseout="this.style.backgroundColor='{% if not dia_info.tem_dados %}var(--color-surface){% else %}var(--color-surface-elevated){% endif %}'">
+            <div class="text-sm font-medium" style="color: var(--color-text-primary);">{{ dia_info.dia }}</div>
             {% if dia_info.tem_dados %}
-            <div class="w-10 h-10 rounded-full mx-auto mt-1"
-                 style="background: conic-gradient(#22c55e 0% {{ dia_info.percentual_receita }}%, #ef4444 {{ dia_info.percentual_receita }}% 100%);">
+            <div class="flex items-center gap-1 mt-2 mx-auto w-fit">
+                {% if dia_info.percentual_receita > 0 %}
+                <span class="inline-block rounded-full" style="background-color: var(--color-success); width: 8px; height: 8px;" aria-label="Receita"></span>
+                {% endif %}
+                {% if dia_info.percentual_receita < 100 %}
+                <span class="inline-block rounded-full" style="background-color: var(--color-danger); width: 8px; height: 8px;" aria-label="Despesa"></span>
+                {% endif %}
             </div>
-            <div class="text-[10px] text-center mt-1 text-gray-600">
+            <!-- Barra proporcional receita/despesa -->
+            <div class="flex h-1.5 rounded-full overflow-hidden mt-1 mx-1" style="background-color: var(--color-border-subtle);">
+                <div class="h-full" style="width: {{ dia_info.percentual_receita }}%; background-color: var(--color-success);"></div>
+                <div class="h-full flex-1" style="background-color: var(--color-danger);"></div>
+            </div>
+            <div class="text-[10px] text-center mt-1 font-mono" style="color: var(--color-text-secondary);">
                 R$ {{ dia_info.total|floatformat:2 }}
             </div>
             {% endif %}
         </a>
         {% else %}
-        <div class="p-2 min-h-[100px] bg-white border-r border-gray-100 last:border-r-0"></div>
+        <div class="p-2 min-h-[100px]" style="background-color: var(--color-surface-elevated); border-right: 1px solid var(--color-border-subtle);"></div>
         {% endif %}
         {% endfor %}
     </div>
@@ -45,31 +57,31 @@
 <!-- Resumo Mensal -->
 {% if resumo_balanca %}
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-        <p class="text-xs text-gray-500 mb-1">Total Receitas</p>
-        <p class="text-lg font-bold text-green-600">R$ {{ resumo_balanca.total_receitas|floatformat:2 }}</p>
+    <div class="rounded-xl border p-4 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-xs mb-1" style="color: var(--color-text-secondary);">Total Receitas</p>
+        <p class="text-lg font-bold font-mono" style="color: var(--color-success);">R$ {{ resumo_balanca.total_receitas|floatformat:2 }}</p>
     </div>
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-        <p class="text-xs text-gray-500 mb-1">Total Despesas</p>
-        <p class="text-lg font-bold text-red-600">R$ {{ resumo_balanca.total_despesas|floatformat:2 }}</p>
+    <div class="rounded-xl border p-4 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-xs mb-1" style="color: var(--color-text-secondary);">Total Despesas</p>
+        <p class="text-lg font-bold font-mono" style="color: var(--color-danger);">R$ {{ resumo_balanca.total_despesas|floatformat:2 }}</p>
     </div>
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-        <p class="text-xs text-gray-500 mb-1">Saldo</p>
-        <p class="text-lg font-bold {% if resumo_balanca.positivo %}text-green-600{% else %}text-red-600{% endif %}">
+    <div class="rounded-xl border p-4 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-xs mb-1" style="color: var(--color-text-secondary);">Saldo</p>
+        <p class="text-lg font-bold font-mono" style="color: {% if resumo_balanca.positivo %}var(--color-success){% else %}var(--color-danger){% endif %};">
             R$ {{ resumo_balanca.saldo|floatformat:2 }}
         </p>
     </div>
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-        <p class="text-xs text-gray-500 mb-1">Dias Positivos</p>
-        <p class="text-lg font-bold text-green-600">{{ resumo_balanca.dias_verdes }}</p>
+    <div class="rounded-xl border p-4 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-xs mb-1" style="color: var(--color-text-secondary);">Dias Positivos</p>
+        <p class="text-lg font-bold" style="color: var(--color-success);">{{ resumo_balanca.dias_verdes }}</p>
     </div>
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-        <p class="text-xs text-gray-500 mb-1">Dias Negativos</p>
-        <p class="text-lg font-bold text-red-600">{{ resumo_balanca.dias_vermelhos }}</p>
+    <div class="rounded-xl border p-4 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-xs mb-1" style="color: var(--color-text-secondary);">Dias Negativos</p>
+        <p class="text-lg font-bold" style="color: var(--color-danger);">{{ resumo_balanca.dias_vermelhos }}</p>
     </div>
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-        <p class="text-xs text-gray-500 mb-1">Dias Equilibrados</p>
-        <p class="text-lg font-bold text-yellow-600">{{ resumo_balanca.dias_equilibrados }}</p>
+    <div class="rounded-xl border p-4 text-center" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-xs mb-1" style="color: var(--color-text-secondary);">Dias Equilibrados</p>
+        <p class="text-lg font-bold" style="color: var(--color-warning);">{{ resumo_balanca.dias_equilibrados }}</p>
     </div>
 </div>
 {% endif %}

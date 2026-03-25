@@ -1,14 +1,15 @@
 <!-- Previsão de Saldo — Fim do Mês -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-        <span>📊</span> Previsão de Saldo — Fim do Mês
+<div class="rounded-xl border p-6 mb-8" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+    <h2 class="text-lg font-semibold font-display mb-4 flex items-center gap-2" style="color: var(--color-text-primary);">
+        <i data-lucide="bar-chart-3" class="w-5 h-5" style="color: var(--color-primary);" aria-hidden="true"></i>
+        Previsão de Saldo — Fim do Mês
     </h2>
 
     {% if not previsao.dados_suficientes %}
     <!-- Dados insuficientes -->
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 flex items-center gap-3">
-        <span class="text-2xl">ℹ️</span>
-        <p class="text-gray-500 text-sm">
+    <div class="rounded-lg p-5 flex items-center gap-3 border" style="background-color: var(--color-surface); border-color: var(--color-border);">
+        <i data-lucide="info" class="w-6 h-6 flex-shrink-0" style="color: var(--color-info);" aria-label="Informação"></i>
+        <p class="text-sm" style="color: var(--color-text-secondary);">
             Dados insuficientes para projeção — continue registrando seus lançamentos.
         </p>
     </div>
@@ -16,48 +17,48 @@
     {% else %}
     <!-- Saldo projetado em destaque -->
     <div class="mb-5">
-        <p class="text-sm font-medium text-gray-500 mb-1">Saldo projetado para o fim do mês</p>
-        <p class="text-3xl font-bold {% if previsao.negativo %}text-red-600{% else %}text-green-600{% endif %}">
+        <p class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">Saldo projetado para o fim do mês</p>
+        <p class="text-3xl font-bold font-mono" style="color: {% if previsao.negativo %}var(--color-danger){% else %}var(--color-success){% endif %};">
             R$ {{ previsao.saldo_projetado|floatformat:2 }}
         </p>
     </div>
 
     <!-- Breakdown -->
-    <div class="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
+    <div class="rounded-lg p-4 space-y-3 text-sm" style="background-color: var(--color-surface); border: 1px solid var(--color-border-subtle);">
         <div class="flex justify-between items-center">
-            <span class="text-gray-600">Saldo atual do mês</span>
-            <span class="font-medium text-blue-600">R$ {{ previsao.saldo_atual|floatformat:2 }}</span>
+            <span style="color: var(--color-text-secondary);">Saldo atual do mês</span>
+            <span class="font-medium font-mono" style="color: var(--color-primary);">R$ {{ previsao.saldo_atual|floatformat:2 }}</span>
         </div>
         <div class="flex justify-between items-center">
-            <span class="text-gray-600">(-) Despesas fixas pendentes</span>
-            <span class="font-medium text-red-600">R$ {{ previsao.despesas_fixas_pendentes|floatformat:2 }}</span>
+            <span style="color: var(--color-text-secondary);">(-) Despesas fixas pendentes</span>
+            <span class="font-medium font-mono" style="color: var(--color-danger);">R$ {{ previsao.despesas_fixas_pendentes|floatformat:2 }}</span>
         </div>
         <div class="flex justify-between items-center">
-            <span class="text-gray-600">(-) Gastos variáveis previstos</span>
-            <span class="font-medium text-red-600">R$ {{ previsao.gastos_variaveis_projetados|floatformat:2 }}</span>
+            <span style="color: var(--color-text-secondary);">(-) Gastos variáveis previstos</span>
+            <span class="font-medium font-mono" style="color: var(--color-danger);">R$ {{ previsao.gastos_variaveis_projetados|floatformat:2 }}</span>
         </div>
         <div class="flex justify-between items-center">
-            <span class="text-gray-600">(+) Receitas previstas</span>
-            <span class="font-medium text-green-600">R$ {{ previsao.receitas_previstas|floatformat:2 }}</span>
+            <span style="color: var(--color-text-secondary);">(+) Receitas previstas</span>
+            <span class="font-medium font-mono" style="color: var(--color-success);">R$ {{ previsao.receitas_previstas|floatformat:2 }}</span>
         </div>
-        <div class="border-t border-gray-300 pt-3 flex justify-between items-center">
-            <span class="font-semibold text-gray-700">= Saldo projetado</span>
-            <span class="font-bold {% if previsao.negativo %}text-red-600{% else %}text-green-600{% endif %}">
+        <div class="pt-3 flex justify-between items-center" style="border-top: 1px solid var(--color-border);">
+            <span class="font-semibold" style="color: var(--color-text-primary);">= Saldo projetado</span>
+            <span class="font-bold font-mono" style="color: {% if previsao.negativo %}var(--color-danger){% else %}var(--color-success){% endif %};">
                 R$ {{ previsao.saldo_projetado|floatformat:2 }}
             </span>
         </div>
     </div>
 
     <!-- Dias restantes -->
-    <p class="text-xs text-gray-400 mt-3 text-center">
+    <p class="text-xs mt-3 text-center" style="color: var(--color-text-disabled);">
         ({{ previsao.dias_restantes }} dias restantes no mês)
     </p>
 
     <!-- Alerta de saldo negativo -->
     {% if previsao.negativo %}
-    <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3" role="alert">
-        <span class="text-xl">⚠️</span>
-        <p class="text-red-700 text-sm font-medium">
+    <div class="mt-4 rounded-lg p-4 flex items-center gap-3 border" style="background-color: color-mix(in srgb, var(--color-danger) 10%, transparent); border-color: var(--color-danger);" role="alert">
+        <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0" style="color: var(--color-danger);" aria-label="Atenção"></i>
+        <p class="text-sm font-medium" style="color: var(--color-danger);">
             Atenção: você pode ficar no vermelho até o final do mês!
         </p>
     </div>

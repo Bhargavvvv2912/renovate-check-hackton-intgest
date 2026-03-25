@@ -1,54 +1,109 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block titulo %}Calendário - {{ mes_nome|title }} {{ ano }}{% endblock %}
 
 {% block conteudo %}
 <div class="space-y-6">
     <!-- Cabeçalho com navegação -->
-    <div class="flex items-center justify-between">
-        <a href="{% url 'financas:calendario_mes' ano_anterior mes_anterior %}"
-           class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-lg bg-white shadow-sm border border-gray-200 transition">
-            ← Anterior
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <a href="{% url 'financas:calendario_mes' ano_anterior mes_anterior %}?aba={{ aba_ativa }}"
+           class="inline-flex items-center gap-1 px-3 py-2.5 rounded-lg border transition min-h-[44px]"
+           style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-secondary);"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'"
+           onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'"
+           aria-label="Mês anterior">
+            <i data-lucide="chevron-left" class="w-4 h-4" aria-hidden="true"></i>
+            Anterior
         </a>
-        <h1 class="text-2xl font-bold text-gray-800">
-            📅 {{ mes_nome|title }} {{ ano }}
-        </h1>
-        <a href="{% url 'financas:calendario_mes' proximo_ano proximo_mes %}"
-           class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-lg bg-white shadow-sm border border-gray-200 transition">
-            Próximo →
+
+        <!-- Seletor de mês/ano -->
+        <div class="flex items-center gap-2">
+            <i data-lucide="calendar" class="w-5 h-5 flex-shrink-0" aria-hidden="true" style="color: var(--color-primary);"></i>
+            <select id="sel-mes" class="rounded-lg border px-2 py-2 text-sm font-medium"
+                    style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-primary); outline: none;">
+                {% for n, nome in meses_opcoes %}
+                <option value="{{ n }}" {% if n == mes %}selected{% endif %}>{{ nome }}</option>
+                {% endfor %}
+            </select>
+            <select id="sel-ano" class="rounded-lg border px-2 py-2 text-sm font-medium"
+                    style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-primary); outline: none;">
+                {% for a in anos_opcoes %}
+                <option value="{{ a }}" {% if a == ano %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <a href="{% url 'financas:calendario_mes' proximo_ano proximo_mes %}?aba={{ aba_ativa }}"
+           class="inline-flex items-center gap-1 px-3 py-2.5 rounded-lg border transition min-h-[44px]"
+           style="background-color: var(--color-surface-elevated); border-color: var(--color-border); color: var(--color-text-secondary);"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'"
+           onmouseout="this.style.backgroundColor='var(--color-surface-elevated)'"
+           aria-label="Próximo mês">
+            Próximo
+            <i data-lucide="chevron-right" class="w-4 h-4" aria-hidden="true"></i>
         </a>
     </div>
+    <script>
+    (function() {
+        var selMes = document.getElementById('sel-mes');
+        var selAno = document.getElementById('sel-ano');
+        var aba = '{{ aba_ativa }}';
+        function navegar() {
+            var m = selMes.value;
+            var a = selAno.value;
+            window.location.href = '/financas/calendario/' + a + '/' + m + '/?aba=' + aba;
+        }
+        selMes.addEventListener('change', navegar);
+        selAno.addEventListener('change', navegar);
+    })();
+    </script>
 
     <!-- Abas -->
-    <div class="border-b border-gray-200">
-        <nav class="flex space-x-4">
+    <div style="border-bottom: 1px solid var(--color-border);">
+        <nav class="flex space-x-2">
             <a href="?aba=heatzone&mes={{ mes }}&ano={{ ano }}"
-               class="px-4 py-2 text-sm font-medium rounded-t-lg {% if aba_ativa == 'heatzone' %}bg-blue-600 text-white{% else %}text-gray-600 hover:text-blue-600{% endif %}">
-                🔥 Heat Zone
+               class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition min-h-[44px]"
+               {% if aba_ativa == 'heatzone' %}
+               style="background-color: var(--color-primary); color: #fff;"
+               {% else %}
+               style="color: var(--color-text-secondary);"
+               onmouseover="this.style.backgroundColor='var(--color-surface)'"
+               onmouseout="this.style.backgroundColor=''"
+               {% endif %}>
+                <i data-lucide="flame" class="w-4 h-4" aria-hidden="true"></i>
+                Heat Zone
             </a>
             <a href="?aba=receita_despesa&mes={{ mes }}&ano={{ ano }}"
-               class="px-4 py-2 text-sm font-medium rounded-t-lg {% if aba_ativa == 'receita_despesa' %}bg-blue-600 text-white{% else %}text-gray-600 hover:text-blue-600{% endif %}">
-                💰 Receitas vs Despesas
+               class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition min-h-[44px]"
+               {% if aba_ativa == 'receita_despesa' %}
+               style="background-color: var(--color-primary); color: #fff;"
+               {% else %}
+               style="color: var(--color-text-secondary);"
+               onmouseover="this.style.backgroundColor='var(--color-surface)'"
+               onmouseout="this.style.backgroundColor=''"
+               {% endif %}>
+                <i data-lucide="wallet" class="w-4 h-4" aria-hidden="true"></i>
+                Receitas vs Despesas
             </a>
         </nav>
     </div>
 
     {% if aba_ativa == 'heatzone' %}
     <!-- Legenda -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <p class="text-sm font-medium text-gray-700 mb-2">Intensidade de gastos:</p>
-        <div class="flex items-center space-x-3 text-xs text-gray-600">
-            <span class="flex items-center"><span class="w-4 h-4 rounded bg-gray-100 border border-gray-300 mr-1"></span> Sem gasto</span>
-            <span class="flex items-center"><span class="w-4 h-4 rounded bg-green-200 mr-1"></span> Baixo</span>
-            <span class="flex items-center"><span class="w-4 h-4 rounded bg-yellow-200 mr-1"></span> Moderado</span>
-            <span class="flex items-center"><span class="w-4 h-4 rounded bg-orange-300 mr-1"></span> Alto</span>
-            <span class="flex items-center"><span class="w-4 h-4 rounded bg-red-400 mr-1"></span> Muito alto</span>
+    <div class="rounded-xl border p-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <p class="text-sm font-medium mb-2" style="color: var(--color-text-primary);">Intensidade de gastos:</p>
+        <div class="flex items-center flex-wrap gap-3 text-xs" style="color: var(--color-text-secondary);">
+            <span class="flex items-center"><span class="w-4 h-4 rounded border mr-1" style="background-color: var(--color-surface); border-color: var(--color-border);"></span> Sem gasto</span>
+            <span class="flex items-center"><span class="w-4 h-4 rounded mr-1" style="background-color: var(--color-primary-muted);"></span> Baixo</span>
+            <span class="flex items-center"><span class="w-4 h-4 rounded mr-1" style="background-color: var(--color-warning); opacity: 0.4;"></span> Moderado</span>
+            <span class="flex items-center"><span class="w-4 h-4 rounded mr-1" style="background-color: var(--color-warning); opacity: 0.7;"></span> Alto</span>
+            <span class="flex items-center"><span class="w-4 h-4 rounded mr-1" style="background-color: var(--color-danger); opacity: 0.8;"></span> Muito alto</span>
         </div>
     </div>
 
     <!-- Calendário Grid -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div class="grid grid-cols-7 text-center text-sm font-medium text-gray-600 bg-gray-50 border-b border-gray-200">
+    <div class="rounded-xl border overflow-hidden" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+        <div class="grid grid-cols-7 text-center text-sm font-medium" style="color: var(--color-text-secondary); background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
             <div class="py-3">Seg</div>
             <div class="py-3">Ter</div>
             <div class="py-3">Qua</div>
@@ -58,20 +113,29 @@
             <div class="py-3">Dom</div>
         </div>
         {% for semana in semanas %}
-        <div class="grid grid-cols-7 border-b border-gray-100 last:border-b-0">
+        <div class="grid grid-cols-7" style="border-bottom: 1px solid var(--color-border-subtle);">
             {% for dia_info in semana %}
             {% if dia_info %}
             <a href="{% url 'financas:calendario_dia' ano mes dia_info.dia %}"
-               class="p-2 min-h-[80px] {{ dia_info.cor }} hover:opacity-80 transition border-r border-gray-100 last:border-r-0">
-                <div class="text-sm font-medium text-gray-800">{{ dia_info.dia }}</div>
+               class="p-2 min-h-[80px] min-w-[44px] transition"
+               style="border-right: 1px solid var(--color-border-subtle);
+                      {% if dia_info.nivel == 0 %}background-color: var(--color-surface-elevated);
+                      {% elif dia_info.nivel == 1 %}background-color: var(--color-primary-muted);
+                      {% elif dia_info.nivel == 2 %}background-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+                      {% elif dia_info.nivel == 3 %}background-color: color-mix(in srgb, var(--color-warning) 60%, transparent);
+                      {% else %}background-color: color-mix(in srgb, var(--color-danger) 70%, transparent);
+                      {% endif %}"
+               onmouseover="this.style.opacity='0.8'"
+               onmouseout="this.style.opacity='1'">
+                <div class="text-sm font-medium" style="color: var(--color-text-primary);">{{ dia_info.dia }}</div>
                 {% if dia_info.total > 0 %}
-                <div class="text-xs text-gray-700 mt-1 font-semibold">
+                <div class="text-xs mt-1 font-semibold font-mono" style="color: var(--color-text-secondary);">
                     R$ {{ dia_info.total|floatformat:2 }}
                 </div>
                 {% endif %}
             </a>
             {% else %}
-            <div class="p-2 min-h-[80px] bg-white border-r border-gray-100 last:border-r-0"></div>
+            <div class="p-2 min-h-[80px]" style="background-color: var(--color-surface-elevated); border-right: 1px solid var(--color-border-subtle);"></div>
             {% endif %}
             {% endfor %}
         </div>
@@ -81,12 +145,18 @@
     <!-- Insights -->
     {% if insights %}
     <div class="space-y-3">
-        <h2 class="text-lg font-semibold text-gray-800">🔍 Padrões detectados</h2>
+        <h2 class="text-lg font-display font-semibold flex items-center gap-2" style="color: var(--color-text-primary);">
+            <i data-lucide="search" class="w-5 h-5" aria-hidden="true" style="color: var(--color-primary);"></i>
+            Padrões detectados
+        </h2>
         {% for insight in insights %}
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-start space-x-3">
-            <span class="text-2xl">{{ insight.icone }}</span>
+        <div class="rounded-xl border p-4 flex items-start gap-3"
+             style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style="background-color: var(--color-primary-muted);">
+                <i data-lucide="lightbulb" class="w-4 h-4" aria-hidden="true" style="color: var(--color-primary);"></i>
+            </div>
             <div>
-                <p class="text-sm font-medium text-gray-800">{{ insight.mensagem }}</p>
+                <p class="text-sm font-medium" style="color: var(--color-text-primary);">{{ insight.mensagem }}</p>
             </div>
         </div>
         {% endfor %}

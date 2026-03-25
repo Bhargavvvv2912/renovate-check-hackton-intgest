@@ -1,38 +1,65 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block titulo %}Excluir Orçamento — Gestão Financeira{% endblock %}
 
 {% block conteudo %}
 <div class="max-w-lg mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Excluir Orçamento</h1>
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{% url 'financas:orcamento_lista' %}"
+           class="inline-flex items-center justify-center w-10 h-10 rounded-lg border transition min-h-[44px] min-w-[44px]"
+           style="border-color: var(--color-border); color: var(--color-text-secondary);"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'"
+           onmouseout="this.style.backgroundColor=''"
+           aria-label="Voltar para lista de orçamentos">
+            <i data-lucide="arrow-left" class="w-5 h-5" aria-hidden="true"></i>
+        </a>
+        <h1 class="text-2xl font-display font-bold" style="color: var(--color-text-primary);">
+            <i data-lucide="trash-2" class="w-6 h-6 inline-block mr-2 align-middle" aria-hidden="true" style="color: var(--color-danger);"></i>
+            Excluir Orçamento
+        </h1>
+    </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6">
+    <div class="rounded-xl border p-6" style="background-color: var(--color-surface-elevated); border-color: var(--color-danger);">
         <div class="mb-6">
-            <div class="flex items-center mb-4">
-                <span class="text-3xl mr-3">⚠️</span>
-                <p class="text-gray-700 font-medium">Tem certeza que deseja excluir este orçamento?</p>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0" style="background-color: var(--color-primary-muted);">
+                    <i data-lucide="alert-triangle" class="w-5 h-5" aria-hidden="true" style="color: var(--color-danger);"></i>
+                </div>
+                <p class="font-medium" style="color: var(--color-text-primary);">Tem certeza que deseja excluir este orçamento?</p>
             </div>
 
-            <div class="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+            <div class="rounded-lg p-4 space-y-2 text-sm" style="background-color: var(--color-surface); border: 1px solid var(--color-border-subtle);">
                 <div class="flex justify-between">
-                    <span class="text-gray-500">Mês/Ano:</span>
-                    <span class="text-gray-800 font-medium">{{ object.mes|stringformat:"02d" }}/{{ object.ano }}</span>
+                    <span style="color: var(--color-text-secondary);">Mês/Ano:</span>
+                    <span class="font-medium" style="color: var(--color-text-primary);">{{ object.mes|stringformat:"02d" }}/{{ object.ano }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-500">Valor:</span>
-                    <span class="text-blue-600 font-semibold">R$ {{ object.valor|floatformat:2 }}</span>
+                    <span style="color: var(--color-text-secondary);">Valor:</span>
+                    <span class="font-semibold font-mono" style="color: var(--color-info);">R$ {{ object.valor|floatformat:2 }}</span>
                 </div>
             </div>
 
-            <p class="text-sm text-red-600 mt-4">Esta ação não pode ser desfeita.</p>
+            <p class="text-sm mt-4 flex items-center gap-1" style="color: var(--color-danger);">
+                <i data-lucide="alert-triangle" class="w-4 h-4" aria-hidden="true"></i>
+                Esta ação não pode ser desfeita.
+            </p>
         </div>
 
         <form method="post">
             {% csrf_token %}
             <div class="flex items-center gap-3">
-                <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-lg transition min-h-[44px]"
+                        style="background-color: var(--color-danger); color: #fff;"
+                        onmouseover="this.style.opacity='0.9'"
+                        onmouseout="this.style.opacity='1'">
+                    <i data-lucide="trash-2" class="w-4 h-4" aria-hidden="true"></i>
                     Confirmar Exclusão
                 </button>
-                <a href="{% url 'financas:orcamento_lista' %}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                <a href="{% url 'financas:orcamento_lista' %}"
+                   class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-lg transition min-h-[44px] border"
+                   style="border-color: var(--color-border); color: var(--color-text-secondary);"
+                   onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                   onmouseout="this.style.backgroundColor=''">
                     Cancelar
                 </a>
             </div>

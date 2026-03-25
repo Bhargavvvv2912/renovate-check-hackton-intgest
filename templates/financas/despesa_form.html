@@ -1,49 +1,81 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block titulo %}{% if object %}Editar Despesa{% else %}Nova Despesa{% endif %} — Gestão Financeira{% endblock %}
 
 {% block conteudo %}
 <div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">
-        {% if object %}Editar Despesa{% else %}Nova Despesa{% endif %}
-    </h1>
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{% url 'financas:despesa_lista' %}"
+           class="inline-flex items-center justify-center w-10 h-10 rounded-lg border transition min-h-[44px] min-w-[44px]"
+           style="border-color: var(--color-border); color: var(--color-text-secondary);"
+           onmouseover="this.style.backgroundColor='var(--color-surface)'"
+           onmouseout="this.style.backgroundColor=''"
+           aria-label="Voltar para lista de despesas">
+            <i data-lucide="arrow-left" class="w-5 h-5" aria-hidden="true"></i>
+        </a>
+        <h1 class="text-2xl font-display font-bold" style="color: var(--color-text-primary);">
+            {% if object %}
+            <i data-lucide="pencil" class="w-6 h-6 inline-block mr-2 align-middle" aria-hidden="true" style="color: var(--color-primary);"></i>
+            Editar Despesa
+            {% else %}
+            <i data-lucide="plus-circle" class="w-6 h-6 inline-block mr-2 align-middle" aria-hidden="true" style="color: var(--color-primary);"></i>
+            Nova Despesa
+            {% endif %}
+        </h1>
+    </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="rounded-xl border p-6" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
         <form method="post" novalidate>
             {% csrf_token %}
 
             {% if form.non_field_errors %}
-            <div class="mb-4 px-4 py-3 bg-red-100 text-red-800 border border-red-200 rounded-lg text-sm" role="alert">
+            <div class="mb-4 px-4 py-3 rounded-lg text-sm border" role="alert"
+                 style="background-color: var(--color-primary-muted); border-color: var(--color-danger); color: var(--color-danger);">
                 {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
+                <p class="flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0" aria-hidden="true"></i>
+                    {{ error }}
+                </p>
                 {% endfor %}
             </div>
             {% endif %}
 
             {% for field in form %}
             <div class="mb-4">
-                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1" style="color: var(--color-text-secondary);">
                     {{ field.label }}
-                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    {% if field.field.required %}<span style="color: var(--color-danger);">*</span>{% endif %}
                 </label>
                 {{ field }}
                 {% if field.errors %}
                 <div class="mt-1">
                     {% for error in field.errors %}
-                    <p class="text-sm text-red-600">{{ error }}</p>
+                    <p class="text-sm flex items-center gap-1" style="color: var(--color-danger);">
+                        <i data-lucide="alert-circle" class="w-3 h-3" aria-hidden="true"></i>
+                        {{ error }}
+                    </p>
                     {% endfor %}
                 </div>
                 {% endif %}
                 {% if field.help_text %}
-                <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                <p class="mt-1 text-xs" style="color: var(--color-text-disabled);">{{ field.help_text }}</p>
                 {% endif %}
             </div>
             {% endfor %}
 
             <div class="flex items-center gap-3 mt-6">
-                <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-lg transition min-h-[44px]"
+                        style="background-color: var(--color-primary); color: #fff;"
+                        onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+                        onmouseout="this.style.backgroundColor='var(--color-primary)'">
+                    <i data-lucide="check" class="w-4 h-4" aria-hidden="true"></i>
                     Salvar
                 </button>
-                <a href="{% url 'financas:despesa_lista' %}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                <a href="{% url 'financas:despesa_lista' %}"
+                   class="inline-flex items-center gap-2 px-6 py-2.5 font-medium rounded-lg transition min-h-[44px] border"
+                   style="border-color: var(--color-border); color: var(--color-text-secondary);"
+                   onmouseover="this.style.backgroundColor='var(--color-surface)'"
+                   onmouseout="this.style.backgroundColor=''">
                     Cancelar
                 </a>
             </div>
