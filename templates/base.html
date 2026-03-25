@@ -59,6 +59,7 @@
     <div class="flex min-h-screen">
 
         <!-- Overlay mobile -->
+        {% if not user.is_superuser %}
         <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
         <!-- Sidebar -->
@@ -167,15 +168,18 @@
                 </button>
             </div>
         </aside>
+        {% endif %}
 
         <!-- Conteúdo principal -->
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Header -->
             <header class="sticky top-0 z-20 flex items-center justify-between h-16 px-4 md:px-6 border-b" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
                 <!-- Botão menu mobile -->
+                {% if not user.is_superuser %}
                 <button id="sidebar-toggle-mobile" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg" style="color: var(--color-text-secondary);" aria-label="Abrir menu">
                     <i data-lucide="menu" class="w-6 h-6" aria-hidden="true"></i>
                 </button>
+                {% endif %}
 
                 <div class="flex-1"></div>
 

@@ -34,12 +34,17 @@ def registro_view(request):
 def login_view(request):
     """Login de usuário existente."""
     if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect('usuarios:admin_dashboard')
         return redirect('financas:dashboard')
 
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
-            login(request, form.get_user())
+            usuario = form.get_user()
+            login(request, usuario)
+            if usuario.is_superuser:
+                return redirect('usuarios:admin_dashboard')
             return redirect('financas:dashboard')
     else:
         form = LoginForm()
