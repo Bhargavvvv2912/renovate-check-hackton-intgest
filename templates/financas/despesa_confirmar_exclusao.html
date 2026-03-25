@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block titulo %}Excluir Despesa — Gestão Financeira{% endblock %}
+
+{% block conteudo %}
+<div class="max-w-lg mx-auto">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Excluir Despesa</h1>
+
+    <div class="bg-white rounded-xl shadow-sm border border-red-200 p-6">
+        <div class="mb-6">
+            <div class="flex items-center mb-4">
+                <span class="text-3xl mr-3">⚠️</span>
+                <p class="text-gray-700 font-medium">Tem certeza que deseja excluir esta despesa?</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Descrição:</span>
+                    <span class="text-gray-800 font-medium">{{ object.descricao }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Valor:</span>
+                    <span class="text-red-600 font-semibold">R$ {{ object.valor|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Data:</span>
+                    <span class="text-gray-800">{{ object.data|date:"d/m/Y" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Categoria:</span>
+                    <span class="text-gray-800">{{ object.categoria.nome }}</span>
+                </div>
+            </div>
+
+            <p class="text-sm text-red-600 mt-4">Esta ação não pode ser desfeita.</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex items-center gap-3">
+                <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition">
+                    Confirmar Exclusão
+                </button>
+                <a href="{% url 'financas:despesa_lista' %}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

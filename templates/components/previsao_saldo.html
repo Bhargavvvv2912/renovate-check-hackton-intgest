@@ -1,0 +1,67 @@
+<!-- Previsão de Saldo — Fim do Mês -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <span>📊</span> Previsão de Saldo — Fim do Mês
+    </h2>
+
+    {% if not previsao.dados_suficientes %}
+    <!-- Dados insuficientes -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 flex items-center gap-3">
+        <span class="text-2xl">ℹ️</span>
+        <p class="text-gray-500 text-sm">
+            Dados insuficientes para projeção — continue registrando seus lançamentos.
+        </p>
+    </div>
+
+    {% else %}
+    <!-- Saldo projetado em destaque -->
+    <div class="mb-5">
+        <p class="text-sm font-medium text-gray-500 mb-1">Saldo projetado para o fim do mês</p>
+        <p class="text-3xl font-bold {% if previsao.negativo %}text-red-600{% else %}text-green-600{% endif %}">
+            R$ {{ previsao.saldo_projetado|floatformat:2 }}
+        </p>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">Saldo atual do mês</span>
+            <span class="font-medium text-blue-600">R$ {{ previsao.saldo_atual|floatformat:2 }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">(-) Despesas fixas pendentes</span>
+            <span class="font-medium text-red-600">R$ {{ previsao.despesas_fixas_pendentes|floatformat:2 }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">(-) Gastos variáveis previstos</span>
+            <span class="font-medium text-red-600">R$ {{ previsao.gastos_variaveis_projetados|floatformat:2 }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">(+) Receitas previstas</span>
+            <span class="font-medium text-green-600">R$ {{ previsao.receitas_previstas|floatformat:2 }}</span>
+        </div>
+        <div class="border-t border-gray-300 pt-3 flex justify-between items-center">
+            <span class="font-semibold text-gray-700">= Saldo projetado</span>
+            <span class="font-bold {% if previsao.negativo %}text-red-600{% else %}text-green-600{% endif %}">
+                R$ {{ previsao.saldo_projetado|floatformat:2 }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Dias restantes -->
+    <p class="text-xs text-gray-400 mt-3 text-center">
+        ({{ previsao.dias_restantes }} dias restantes no mês)
+    </p>
+
+    <!-- Alerta de saldo negativo -->
+    {% if previsao.negativo %}
+    <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3" role="alert">
+        <span class="text-xl">⚠️</span>
+        <p class="text-red-700 text-sm font-medium">
+            Atenção: você pode ficar no vermelho até o final do mês!
+        </p>
+    </div>
+    {% endif %}
+
+    {% endif %}
+</div>

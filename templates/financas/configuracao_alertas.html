@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block titulo %}Configuração de Alertas — Gestão Financeira{% endblock %}
+
+{% block conteudo %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Configuração de Alertas</h1>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="mb-4 px-4 py-3 bg-red-100 text-red-800 border border-red-200 rounded-lg text-sm" role="alert">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Seção: Alerta de Orçamento -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-700 mb-1">🔔 Alerta de Orçamento</h2>
+                <p class="text-sm text-gray-500 mb-4">Receba alertas quando seus gastos se aproximarem do orçamento definido.</p>
+
+                <div class="flex items-center gap-3 mb-4">
+                    {{ form.alerta_orcamento_ativo }}
+                    <label for="{{ form.alerta_orcamento_ativo.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                        Ativar alerta de orçamento
+                    </label>
+                </div>
+
+                <div id="secao-orcamento" class="ml-8">
+                    <div class="mb-4">
+                        <label for="{{ form.limiar_orcamento.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Limiar de alerta (%)
+                        </label>
+                        {{ form.limiar_orcamento }}
+                        {% if form.limiar_orcamento.errors %}
+                        <div class="mt-1">
+                            {% for error in form.limiar_orcamento.errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Alerta será disparado quando os gastos atingirem esse percentual do orçamento (1–100).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção: Alerta de Gasto Acelerado -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-700 mb-1">⚡ Alerta de Gasto Acelerado</h2>
+                <p class="text-sm text-gray-500 mb-4">Receba alertas quando a velocidade de gastos estiver acima do esperado para o período.</p>
+
+                <div class="flex items-center gap-3">
+                    {{ form.alerta_gasto_acelerado_ativo }}
+                    <label for="{{ form.alerta_gasto_acelerado_ativo.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                        Ativar alerta de gasto acelerado
+                    </label>
+                </div>
+            </div>
+
+            <!-- Seção: Alerta de Saldo Baixo -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-700 mb-1">⚠️ Alerta de Saldo Baixo</h2>
+                <p class="text-sm text-gray-500 mb-4">Receba alertas quando seu saldo estiver abaixo do limite mínimo definido.</p>
+
+                <div class="flex items-center gap-3 mb-4">
+                    {{ form.alerta_saldo_baixo_ativo }}
+                    <label for="{{ form.alerta_saldo_baixo_ativo.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                        Ativar alerta de saldo baixo
+                    </label>
+                </div>
+
+                <div id="secao-saldo" class="ml-8">
+                    <div class="mb-4">
+                        <label for="{{ form.limite_saldo_minimo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Limite mínimo de saldo (R$)
+                        </label>
+                        {{ form.limite_saldo_minimo }}
+                        {% if form.limite_saldo_minimo.errors %}
+                        <div class="mt-1">
+                            {% for error in form.limite_saldo_minimo.errors %}
+                            <p class="text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">Alerta será disparado quando o saldo ficar abaixo deste valor.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 mt-6">
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+                    Salvar configurações
+                </button>
+                <a href="{% url 'financas:dashboard' %}" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                    Voltar ao Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleSecao(checkboxId, secaoId) {
+        const checkbox = document.getElementById(checkboxId);
+        const secao = document.getElementById(secaoId);
+        if (!checkbox || !secao) return;
+
+        function atualizar() {
+            if (checkbox.checked) {
+                secao.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                secao.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        checkbox.addEventListener('change', atualizar);
+        atualizar();
+    }
+
+    toggleSecao('{{ form.alerta_orcamento_ativo.id_for_label }}', 'secao-orcamento');
+    toggleSecao('{{ form.alerta_saldo_baixo_ativo.id_for_label }}', 'secao-saldo');
+</script>
+{% endblock %}

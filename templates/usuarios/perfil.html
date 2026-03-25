@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block titulo %}Meu Perfil{% endblock %}
+
+{% block conteudo %}
+<div class="flex items-center justify-center min-h-screen px-4">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Meu Perfil</h2>
+
+        <div class="space-y-4">
+            <div>
+                <span class="text-sm font-medium text-gray-500">Usuário</span>
+                <p class="text-gray-800">{{ user.username }}</p>
+            </div>
+            <div>
+                <span class="text-sm font-medium text-gray-500">Nome</span>
+                <p class="text-gray-800">{{ user.first_name|default:"—" }}</p>
+            </div>
+            <div>
+                <span class="text-sm font-medium text-gray-500">E-mail</span>
+                <p class="text-gray-800">{{ user.email|default:"—" }}</p>
+            </div>
+            <div>
+                <span class="text-sm font-medium text-gray-500">Membro desde</span>
+                <p class="text-gray-800">{{ user.date_joined|date:"d/m/Y" }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6 flex gap-4">
+            <a href="{% url 'landing' %}"
+               class="flex-1 text-center py-2 px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                Voltar
+            </a>
+            <form method="post" action="{% url 'usuarios:logout' %}" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-center py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    Sair
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

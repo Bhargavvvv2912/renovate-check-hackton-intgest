@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block titulo %}Categorias — Gestão Financeira{% endblock %}
+
+{% block conteudo %}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Categorias</h1>
+    <a href="{% url 'financas:categoria_criar' %}" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">
+        + Nova Categoria
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    {% if categorias %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for categoria in categorias %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 text-gray-800 font-medium">{{ categoria.nome }}</td>
+                    <td class="px-6 py-4">
+                        {% if categoria.tipo == 'receita' %}
+                        <span class="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">Receita</span>
+                        {% else %}
+                        <span class="inline-flex px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">Despesa</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap">
+                        <a href="{% url 'financas:categoria_editar' categoria.pk %}" class="text-blue-600 hover:text-blue-800 font-medium text-sm mr-3" aria-label="Editar categoria {{ categoria.nome }}">Editar</a>
+                        <a href="{% url 'financas:categoria_excluir' categoria.pk %}" class="text-red-600 hover:text-red-800 font-medium text-sm" aria-label="Excluir categoria {{ categoria.nome }}">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <p class="text-gray-400 text-lg mb-4">Nenhuma categoria cadastrada.</p>
+        <a href="{% url 'financas:categoria_criar' %}" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">
+            + Criar primeira categoria
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Paginação -->
+{% if is_paginated %}
+<nav class="flex justify-center mt-6" aria-label="Paginação">
+    <ul class="inline-flex items-center gap-1">
+        {% if page_obj.has_previous %}
+        <li>
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                ← Anterior
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li><span class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+            <li><a href="?page={{ num }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li>
+            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                Próxima →
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

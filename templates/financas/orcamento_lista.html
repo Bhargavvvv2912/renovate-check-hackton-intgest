@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block titulo %}Orçamentos — Gestão Financeira{% endblock %}
+
+{% block conteudo %}
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Orçamentos</h1>
+    <a href="{% url 'financas:orcamento_criar' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+        + Novo Orçamento
+    </a>
+</div>
+
+<!-- Tabela -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    {% if orcamentos %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mês/Ano</th>
+                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Valor</th>
+                    <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for orcamento in orcamentos %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 text-gray-800 whitespace-nowrap">{{ orcamento.mes|stringformat:"02d" }}/{{ orcamento.ano }}</td>
+                    <td class="px-6 py-4 text-blue-600 font-semibold text-right whitespace-nowrap">R$ {{ orcamento.valor|floatformat:2 }}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap">
+                        <a href="{% url 'financas:orcamento_editar' orcamento.pk %}" class="text-blue-600 hover:text-blue-800 font-medium text-sm mr-3" aria-label="Editar orçamento {{ orcamento.mes|stringformat:'02d' }}/{{ orcamento.ano }}">Editar</a>
+                        <a href="{% url 'financas:orcamento_excluir' orcamento.pk %}" class="text-red-600 hover:text-red-800 font-medium text-sm" aria-label="Excluir orçamento {{ orcamento.mes|stringformat:'02d' }}/{{ orcamento.ano }}">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <p class="text-gray-400 text-lg mb-4">Nenhum orçamento cadastrado.</p>
+        <a href="{% url 'financas:orcamento_criar' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+            + Cadastrar primeiro orçamento
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Paginação -->
+{% if is_paginated %}
+<nav class="flex justify-center mt-6" aria-label="Paginação">
+    <ul class="inline-flex items-center gap-1">
+        {% if page_obj.has_previous %}
+        <li>
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                ← Anterior
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li><span class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg font-medium">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+            <li><a href="?page={{ num }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li>
+            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                Próxima →
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

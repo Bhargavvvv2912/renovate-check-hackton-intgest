@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block titulo %}Gestão Financeira — Controle suas finanças{% endblock %}
+
+{% block conteudo %}
+<div class="flex flex-col items-center justify-center min-h-screen px-4">
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Gestão Financeira</h1>
+    <p class="text-lg text-gray-600 mb-8 text-center max-w-xl">
+        Controle suas receitas e despesas de forma simples e eficiente.
+    </p>
+    <div class="flex gap-4">
+        <a href="{% url 'usuarios:login' %}"
+           class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Entrar
+        </a>
+        <a href="{% url 'usuarios:registro' %}"
+           class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+            Criar Conta
+        </a>
+    </div>
+</div>
+{% endblock %}
