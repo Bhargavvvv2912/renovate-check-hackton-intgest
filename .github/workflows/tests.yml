@@ -1,0 +1,30 @@
+name: tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --upgrade pip
+      # The same ladder aura.environment climbs. pip 24.1 skips any release
+      # whose metadata is not valid PEP 440 and then reports it as missing, so
+      # a baseline that needs an older installer would fail here and every
+      # Dependabot pull request with it -- scoring this arm on a repository
+      # that never worked rather than on what Dependabot proposed.
+      # Then, as the arms do, the build tools of the pins' own era for a
+      # source distribution a current setuptools can no longer build.
+      - run: |
+          python -m pip install -r requirements.txt || { python -m pip install -q pip==24.0 && python -m pip install -r requirements.txt; } || { python -m pip install -q setuptools==71.1.0 wheel==0.43.0 && python -m pip install --no-build-isolation -r requirements.txt; }
+      # --deselect: tests that fail before anything is bumped. CI judges a
+      # pull request absolutely, the arms judge against the baseline; without
+      # this the project's own broken test fails every pull request.
+      - run: python -m pytest tests --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_01_landing_page_carrega --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_02_registro_novo_usuario --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_03_logout --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_04_login_usuario_existente --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_05_dashboard_exibe_informacoes --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_06_criar_categoria_receita --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_07_criar_categoria_despesa --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_08_criar_receita --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_09_criar_despesa --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_10_dashboard_reflete_saldo --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_11_listar_receitas --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_12_listar_despesas --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_13_listar_categorias --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_14_acessar_perfil --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_15_login_invalido_mostra_erro --deselect tests/test_e2e.py::TestFluxoCompletoE2E::test_16_acesso_nao_autenticado_redireciona --deselect tests/test_services.py::TestPrevisaoSaldo::test_previsao_saldo_com_dados
